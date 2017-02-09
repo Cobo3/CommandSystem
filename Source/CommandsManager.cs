@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SickDev.CommandSystem {
     public class CommandsManager {
@@ -17,7 +16,7 @@ namespace SickDev.CommandSystem {
             commands = new List<CommandBase>();
         }
 
-        internal void Load() {
+        public void Load() {
             CommandAttributeLoader loader = new CommandAttributeLoader();
             Add(loader.LoadCommands());
         }
@@ -39,12 +38,12 @@ namespace SickDev.CommandSystem {
             return commands.ToArray();
         }
 
-        internal CommandExecuter GetCommandExecuter(string text) {
+        public CommandExecuter GetCommandExecuter(string text) {
             ParsedCommand parsedCommand = new ParsedCommand(text);
             return GetCommandExecuter(parsedCommand);
         }
 
-        internal CommandExecuter GetCommandExecuter(ParsedCommand parsedCommand) {
+        public CommandExecuter GetCommandExecuter(ParsedCommand parsedCommand) {
             return new CommandExecuter(commands, parsedCommand);            
         }
 

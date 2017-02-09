@@ -1,9 +1,8 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Collections.Generic;
 
 namespace SickDev.CommandSystem {
-    internal class CommandExecuter {
+    public class CommandExecuter {
 
         readonly List<CommandBase> commands;
         readonly ParsedCommand parsedCommand;
