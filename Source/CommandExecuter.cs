@@ -9,7 +9,7 @@ namespace SickDev.CommandSystem {
         List<CommandBase> overloads = new List<CommandBase>();
         Dictionary<CommandBase, object[]> matches = new Dictionary<CommandBase, object[]>();
 
-        public CommandExecuter(List<CommandBase> commands, ParsedCommand parsedCommand) {
+        internal CommandExecuter(List<CommandBase> commands, ParsedCommand parsedCommand) {
             this.commands = commands;
             this.parsedCommand = parsedCommand;
         }
