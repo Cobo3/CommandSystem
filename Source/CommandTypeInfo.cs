@@ -32,7 +32,7 @@ namespace SickDev.CommandSystem {
                 ParameterInfo[] parameters = constructors[i].GetParameters();
                 if (parameters.Length>=3 && parameters[0].ParameterType.IsSubclassOf(typeof(Delegate)) && 
                     parameters[1].ParameterType == typeof(string) && 
-                    parameters[2].ParameterType == typeof(string[])) {
+                    parameters[2].ParameterType == typeof(string)) {
                     constructor = constructors[i];
                     firstParameter = parameters[0];
                     found = true;
