@@ -12,15 +12,14 @@ namespace SickDev.CommandSystem {
         internal CommandExecuter(List<CommandBase> commands, ParsedCommand parsedCommand) {
             this.commands = commands;
             this.parsedCommand = parsedCommand;
+            FilterOverloads();
+            FilterMatches();
         }
 
-        public bool IsValidCommand() {
-            for (int i = 0; i < commands.Count; i++)
-                if (commands[i].IsOverloadOf(parsedCommand))
+        void FilterOverloads() {
+            for(int i = 0; i < commands.Count; i++)
+                if(commands[i].IsOverloadOf(parsedCommand))
                     overloads.Add(commands[i]);
-
-            FilterMatches();
-            return overloads.Count >= 1;
         }
 
         void FilterMatches() {
@@ -37,8 +36,12 @@ namespace SickDev.CommandSystem {
             }
         }
 
+        public bool IsValidCommand() {
+            return overloads.Count >= 1;
+        }
+
         public bool HasReturnType() {
-            return matches.Keys.ToArray()[0].isFunc;
+            return matches.Count>0 && matches.Keys.ToArray()[0].isFunc;
         }
 
         public object Execute() {
