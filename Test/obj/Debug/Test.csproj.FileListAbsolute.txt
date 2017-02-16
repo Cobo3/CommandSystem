@@ -1,8 +1,0 @@
-C:\Users\Cobo\Desktop\Game Career\Projects\OP Team\CommandSystem\Test\bin\Debug\Test.exe.config
-C:\Users\Cobo\Desktop\Game Career\Projects\OP Team\CommandSystem\Test\bin\Debug\Test.exe
-C:\Users\Cobo\Desktop\Game Career\Projects\OP Team\CommandSystem\Test\bin\Debug\Test.pdb
-C:\Users\Cobo\Desktop\Game Career\Projects\OP Team\CommandSystem\Test\bin\Debug\CommandSystem.dll
-C:\Users\Cobo\Desktop\Game Career\Projects\OP Team\CommandSystem\Test\bin\Debug\CommandSystem.pdb
-C:\Users\Cobo\Desktop\Game Career\Projects\OP Team\CommandSystem\Test\obj\Debug\Test.csprojResolveAssemblyReference.cache
-C:\Users\Cobo\Desktop\Game Career\Projects\OP Team\CommandSystem\Test\obj\Debug\Test.exe
-C:\Users\Cobo\Desktop\Game Career\Projects\OP Team\CommandSystem\Test\obj\Debug\Test.pdb
