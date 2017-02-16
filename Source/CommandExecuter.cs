@@ -55,5 +55,9 @@ namespace SickDev.CommandSystem {
             enumerator.MoveNext();
             return enumerator.Current.Key.Execute(enumerator.Current.Value);
         }
+
+        public CommandBase[] GetOverloads() {
+            return overloads.ToArray();
+        }
     }
 }

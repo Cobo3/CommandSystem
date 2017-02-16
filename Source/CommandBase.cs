@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace SickDev.CommandSystem {
     public abstract class CommandBase {
-        Delegate method;
+        internal Delegate method;
         public readonly string alias;
         public readonly string name;
         public readonly string description;
@@ -18,7 +18,7 @@ namespace SickDev.CommandSystem {
             this.description = description;
             this.alias = alias;
             name = string.IsNullOrEmpty(alias) ? _delegate.Method.Name : alias;
-            signature = new Signature(method.Method);
+            signature = new Signature(this);
         }
 
         public bool IsOverloadOf(ParsedCommand parsedCommand) {
