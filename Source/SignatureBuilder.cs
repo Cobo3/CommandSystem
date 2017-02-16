@@ -39,8 +39,11 @@ namespace SickDev.CommandSystem {
 
         public static string Build(MethodInfo method, string nameOverride = null) {
             StringBuilder signature = new StringBuilder();
-            signature.Append(TypeToString(method.ReturnType));
-            signature.Append(" ");
+            string returnType = TypeToString(method.ReturnType);
+            if(returnType != aliases[typeof(void)]) {
+                signature.Append(returnType);
+                signature.Append(" ");
+            }
             signature.Append(nameOverride??method.Name);
             ParameterInfo[] parameters = method.GetParameters();
             if (parameters.Length > 0)
