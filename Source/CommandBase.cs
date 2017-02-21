@@ -12,12 +12,12 @@ namespace SickDev.CommandSystem {
 
         public bool isFunc { get { return method.Method.ReturnType != typeof(void); } }
 
-        protected CommandBase(Delegate _delegate, string description, string alias = null) {
+        protected CommandBase(Delegate _delegate, string alias = null, string description = null) {
             method = _delegate;
             isAnonymous = method.Method.GetCustomAttributes(typeof(CompilerGeneratedAttribute), false).Length > 0;
-            this.description = description;
-            this.alias = alias;
-            name = string.IsNullOrEmpty(alias) ? _delegate.Method.Name : alias;
+            this.description = description??string.Empty;
+            this.alias = alias??string.Empty;
+            name = string.IsNullOrEmpty(this.alias.Trim()) ? _delegate.Method.Name : this.alias;
             signature = new Signature(this);
         }
 
