@@ -41,11 +41,14 @@ namespace SickDev.CommandSystem {
         }
 
         public object Execute() {
+            if(!isValidCommand)
+                throw new CommandNotFoundException(parsedCommand);
+
             if (matches.Count > 1)
                 throw new AmbiguousCommandCallException(parsedCommand.raw, matches.ConvertAll(x=>x.command).ToArray());
 
             if (matches.Count == 0)
-                throw new CommandOverloadNotFoundException(parsedCommand);
+                throw new OverloadNotFoundException(parsedCommand);
 
             return matches[0].command.Execute(matches[0].parameters);
         }

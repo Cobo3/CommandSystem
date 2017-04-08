@@ -103,16 +103,30 @@ namespace SickDev.CommandSystem {
         }
     }
 
-    public class CommandOverloadNotFoundException : CommandSystemException {
-        ParsedCommand parsedCommand;
+    public class CommandNotFoundException : CommandSystemException {
+        ParsedCommand command;
 
-        public CommandOverloadNotFoundException(ParsedCommand parsedCommand) {
-            this.parsedCommand = parsedCommand;
+        public CommandNotFoundException(ParsedCommand command) {
+            this.command = command;
         }
 
         public override string Message {
             get {
-                return "No overload found for command " + parsedCommand.raw;
+                return "No command found with name or alias '" + command.command + "'";
+            }
+        }
+    }
+
+    public class OverloadNotFoundException : CommandSystemException {
+        ParsedCommand command;
+
+        public OverloadNotFoundException(ParsedCommand command) {
+            this.command = command;
+        }
+
+        public override string Message {
+            get {
+                return "No overload found for command " + command.raw;
             }
         }
     }
