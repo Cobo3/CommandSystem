@@ -7,7 +7,11 @@ namespace SickDev.CommandSystem {
         readonly List<CommandBase> commands;
         readonly ParsedCommand parsedCommand;
         List<CommandBase> overloads = new List<CommandBase>();
-        Dictionary<CommandBase, object[]> matches = new Dictionary<CommandBase, object[]>();
+        List<Match> matches = new List<Match>();
+
+        public bool isValidCommand { get { return overloads.Count >= 1; } }
+        public bool canBeExecuted { get { return matches.Count == 1; } }
+        public bool hasReturnType { get { return canBeExecuted && matches[0].command.isFunc; } }
 
         internal CommandExecuter(List<CommandBase> commands, ParsedCommand parsedCommand) {
             this.commands = commands;
@@ -27,7 +31,7 @@ namespace SickDev.CommandSystem {
                 try {
                     if (overloads[i].signature.Matches(parsedCommand.args)) {
                         object[] arguments = overloads[i].signature.Convert(parsedCommand.args);
-                        matches.Add(overloads[i], arguments);
+                        matches.Add(new Match(overloads[i], arguments));
                     }
                 }
                 catch (CommandSystemException exception) {
@@ -36,28 +40,28 @@ namespace SickDev.CommandSystem {
             }
         }
 
-        public bool IsValidCommand() {
-            return overloads.Count >= 1;
-        }
-
-        public bool HasReturnType() {
-            return matches.Count>0 && matches.Keys.ToArray()[0].isFunc;
-        }
-
         public object Execute() {
             if (matches.Count > 1)
-                throw new AmbiguousCommandCallException(parsedCommand.raw, matches.Keys.ToArray());
+                throw new AmbiguousCommandCallException(parsedCommand.raw, matches.ConvertAll(x=>x.command).ToArray());
 
             if (matches.Count == 0)
                 throw new CommandOverloadNotFoundException(parsedCommand);
 
-            var enumerator = matches.GetEnumerator();
-            enumerator.MoveNext();
-            return enumerator.Current.Key.Execute(enumerator.Current.Value);
+            return matches[0].command.Execute(matches[0].parameters);
         }
 
         public CommandBase[] GetOverloads() {
             return overloads.ToArray();
+        }
+
+        struct Match {
+            public readonly CommandBase command;
+            public readonly object[] parameters;
+
+            public Match(CommandBase command, object[] parameters) {
+                this.command = command;
+                this.parameters = parameters;
+            }
         }
     }
 }
