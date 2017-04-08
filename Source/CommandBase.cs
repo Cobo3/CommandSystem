@@ -28,5 +28,12 @@ namespace SickDev.CommandSystem {
         public object Execute(object[] args) {
             return method.DynamicInvoke(args);
         }
+
+        public override bool Equals(object obj) {
+            CommandBase other = (CommandBase)obj;
+            if(other == null)
+                return false;
+            return other.method == method;
+        }
     }
 }

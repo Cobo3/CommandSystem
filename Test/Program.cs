@@ -7,13 +7,13 @@ namespace Test {
             CommandsManager.onMessage += Console.WriteLine;
             CommandsManager manager = new CommandsManager();
             manager.AddAssemblyWithCommands("Test.exe");
-            manager.Load();
-            Console.WriteLine(manager.GetCommandExecuter("test").Execute());
+            manager.Add(new FuncCommand<string>(TestMethod));
+            Console.WriteLine(manager.GetCommandExecuter("TestMethod").Execute());
         }
 
-        [Command(alias ="test")]
-        static string DomainInfo() {
-            return AppDomain.CurrentDomain.ToString();
+        [Command(alias = "test")]
+        static string TestMethod() {
+            return "this text should be shown on the console when executing the command";
         }
     }
 }

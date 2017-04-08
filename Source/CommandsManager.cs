@@ -1,15 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System.Linq;
+using System.Collections.Generic;
 
 namespace SickDev.CommandSystem {
     public class CommandsManager {
         public delegate void OnExceptionThrown(CommandSystemException exception);
         public delegate void OnMessage(string message);
-        public delegate void OnCommandAdded(CommandBase command);
+        public delegate void OnCommandModified(CommandBase command);
 
         List<CommandBase> commands;
         Config config;
 
-        public event OnCommandAdded onCommandAdded;
+        public event OnCommandModified onCommandAdded;
+        public event OnCommandModified onCommandRemoved;
         public static event OnExceptionThrown onExceptionThrown;
         public static event OnMessage onMessage;
 
@@ -29,10 +31,22 @@ namespace SickDev.CommandSystem {
         }
 
         public void Add(CommandBase command) {
-            if (!commands.Contains(command)) {
+            if (!commands.Contains(command) || !commands.Any(x=>x.Equals(command))) {
                 commands.Add(command);
                 if (onCommandAdded != null)
                     onCommandAdded(command);
+            }
+        }
+
+        public void Remove(CommandBase[] commands) {
+            for(int i = 0; i < commands.Length; i++)
+                Remove(commands[i]);
+        }
+
+        public void Remove(CommandBase command) {
+            if(commands.RemoveAll(x => x.Equals(command)) > 0) {
+                if(onCommandRemoved != null)
+                    onCommandRemoved(command);
             }
         }
 
