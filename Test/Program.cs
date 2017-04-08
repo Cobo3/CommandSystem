@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using SickDev.CommandSystem;
 
 namespace Test {
@@ -9,9 +8,7 @@ namespace Test {
             CommandsManager manager = new CommandsManager();
             manager.AddAssemblyWithCommands("Test.exe");
             manager.Load();
-            Console.WriteLine(manager.GetCommandExecuter("test").GetOverloads()[0].signature.raw);
-            while (true)
-                Thread.Sleep(5000);
+            Console.WriteLine(manager.GetCommandExecuter("test").Execute());
         }
 
         [Command(alias ="test")]
