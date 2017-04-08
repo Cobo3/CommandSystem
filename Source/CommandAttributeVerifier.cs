@@ -22,7 +22,7 @@ namespace SickDev.CommandSystem {
                 if (commandType == null)
                     throw new NoSuitableCommandFoundException(method);
                 command = (CommandBase)Activator.CreateInstance(commandType.type, Delegate.CreateDelegate(
-                    commandType.firstParameter.ParameterType, method), attribute.description, attribute.alias);
+                    commandType.firstParameter.ParameterType, method), attribute.alias, attribute.description);
             }
             else
                 throw new UnsupportedCommandDeclarationException(method);
