@@ -43,7 +43,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CommandSystem.csproj">
+    <ProjectReference Include="..\CommandSystem\CommandSystem.csproj">
       <Project>{5b247438-e54b-4783-b0d7-6b28ecef7acb}</Project>
       <Name>CommandSystem</Name>
     </ProjectReference>

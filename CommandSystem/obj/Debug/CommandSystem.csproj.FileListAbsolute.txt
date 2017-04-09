@@ -1,0 +1,5 @@
+C:\Users\Cobo\Desktop\Game Career\Projects\OP Team\CommandSystem\obj\Debug\CommandSystem.csprojResolveAssemblyReference.cache
+C:\Users\Cobo\Desktop\Game Career\Projects\OP Team\CommandSystem\bin\Debug\CommandSystem.dll
+C:\Users\Cobo\Desktop\Game Career\Projects\OP Team\CommandSystem\bin\Debug\CommandSystem.pdb
+C:\Users\Cobo\Desktop\Game Career\Projects\OP Team\CommandSystem\obj\Debug\CommandSystem.dll
+C:\Users\Cobo\Desktop\Game Career\Projects\OP Team\CommandSystem\obj\Debug\CommandSystem.pdb
