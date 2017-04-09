@@ -1,5 +1,4 @@
-/bin
-/obj
+bin/
+obj/
 /.vs
-/test/bin
-/test/obj
+*.cache
