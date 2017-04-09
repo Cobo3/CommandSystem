@@ -1,0 +1,7 @@
+C:\Users\Cobo\Desktop\Game Career\Projects\OP Team\CommandSystem\CommandSystem-Unity\bin\Debug\CommandSystem-Unity.dll
+C:\Users\Cobo\Desktop\Game Career\Projects\OP Team\CommandSystem\CommandSystem-Unity\bin\Debug\CommandSystem-Unity.pdb
+C:\Users\Cobo\Desktop\Game Career\Projects\OP Team\CommandSystem\CommandSystem-Unity\bin\Debug\CommandSystem.dll
+C:\Users\Cobo\Desktop\Game Career\Projects\OP Team\CommandSystem\CommandSystem-Unity\bin\Debug\CommandSystem.pdb
+C:\Users\Cobo\Desktop\Game Career\Projects\OP Team\CommandSystem\CommandSystem-Unity\obj\Debug\CommandSystem-Unity.dll
+C:\Users\Cobo\Desktop\Game Career\Projects\OP Team\CommandSystem\CommandSystem-Unity\obj\Debug\CommandSystem-Unity.pdb
+C:\Users\Cobo\Desktop\Game Career\Projects\OP Team\CommandSystem\CommandSystem-Unity\obj\Debug\CommandSystem-Unity.csprojResolveAssemblyReference.cache
