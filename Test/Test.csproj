@@ -43,6 +43,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CommandSystem-Unity\CommandSystem-Unity.csproj">
+      <Project>{a584d558-52f2-466e-a82f-ae294cd7b8f9}</Project>
+      <Name>CommandSystem-Unity</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CommandSystem\CommandSystem.csproj">
       <Project>{5b247438-e54b-4783-b0d7-6b28ecef7acb}</Project>
       <Name>CommandSystem</Name>

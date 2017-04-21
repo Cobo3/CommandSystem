@@ -8,8 +8,8 @@ namespace SickDev.CommandSystem {
         Type[] types;
         CommandTypeInfo[] commandTypes;
 
-        public CommandAttributeLoader(Config config) {
-            types = ReflectionFinder.LoadUserClassesAndStructs(config.assembliesWithCommands);
+        public CommandAttributeLoader() {
+            types = ReflectionFinder.LoadUserClassesAndStructs();
             commandTypes = FilterCommandTypes(types);
         }
         

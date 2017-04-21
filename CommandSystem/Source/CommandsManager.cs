@@ -7,21 +7,15 @@ namespace SickDev.CommandSystem {
         public delegate void OnMessage(string message);
         public delegate void OnCommandModified(CommandBase command);
 
-        List<CommandBase> commands;
-        Config config;
+        List<CommandBase> commands = new List<CommandBase>();
 
         public event OnCommandModified onCommandAdded;
         public event OnCommandModified onCommandRemoved;
         public static event OnExceptionThrown onExceptionThrown;
         public static event OnMessage onMessage;
 
-        public CommandsManager() {
-            commands = new List<CommandBase>();
-            config = new Config();
-        }
-
         public void Load() {
-            CommandAttributeLoader loader = new CommandAttributeLoader(config);
+            CommandAttributeLoader loader = new CommandAttributeLoader();
             Add(loader.LoadCommands());
         }
 
@@ -71,10 +65,6 @@ namespace SickDev.CommandSystem {
         internal static void SendMessage(string message) {
             if (onMessage != null)
                 onMessage(message);
-        }
-
-        public void AddAssemblyWithCommands(string assemblyName) {
-            config.AddAssemblyWithCommands(assemblyName);
         }
     }
 }

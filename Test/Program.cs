@@ -5,10 +5,11 @@ namespace Test {
     class Program {
         static void Main(string[] args) {
             CommandsManager.onMessage += Console.WriteLine;
+            Config.AddAssemblyWithCommands("Test");
+
             CommandsManager manager = new CommandsManager();
-            manager.AddAssemblyWithCommands("Test.exe");
-            manager.Add(new FuncCommand<string>(TestMethod));
-            Console.WriteLine(manager.GetCommandExecuter("TestMethod").Execute());
+            manager.Load();
+            Console.WriteLine(manager.GetCommandExecuter("test").Execute());
         }
 
         [Command(alias = "test")]

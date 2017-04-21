@@ -1,6 +1,6 @@
 ﻿/*This File provides various Parser methods used for some common Types*/
 namespace SickDev.CommandSystem {
-    internal static partial class Parsers {
+    static class Parsers {
 
         const string nullObject = "null";
         /**********************************************
