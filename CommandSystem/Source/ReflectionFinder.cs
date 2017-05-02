@@ -8,11 +8,16 @@ namespace SickDev.CommandSystem {
         static Type[] cache;
         
         public static Type[] LoadUserClassesAndStructs(bool reload = false) {
-            if (reload || cache == null) {
+            if(reload || cache == null) {
                 List<Type> types = new List<Type>();
                 Assembly[] assemblies = GetAssembliesWithCommands();
-                CommandsManager.SendMessage("Loading CommandSystem data from: " + 
-                    String.Join(", ", assemblies.ToList().ConvertAll(x => x.ManifestModule.Name).ToArray()) + ".");
+                CommandsManager.SendMessage("Loading CommandSystem data from: " +
+                    String.Join(", ", assemblies.ToList().ConvertAll(x => {
+                        AssemblyName name = x.GetName();
+                        string path = name.CodeBase;
+                        string extension = path.Substring(path.LastIndexOf('.'));
+                        return name.Name + extension;
+                    }).ToArray()) + ".");
                 for (int i = 0; i < assemblies.Length; i++)
                     types.AddRange(assemblies[i].GetTypes());
                 cache = types.Where(x => x.IsClass || x.IsValueType && !x.IsEnum).ToArray();
