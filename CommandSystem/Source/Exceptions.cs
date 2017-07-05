@@ -42,20 +42,6 @@ namespace SickDev.CommandSystem {
         }
     }
 
-    public class NoSuitableCommandFoundException : CommandSystemException {
-        MethodInfo method;
-
-        public NoSuitableCommandFoundException(MethodInfo method) {
-            this.method = method;
-        }
-
-        public override string Message {
-            get {
-                return "No suitable command found for method "+method.DeclaringType.Name+"."+method.Name+". Please, review the docs on how to create new Command types";
-            }
-        }
-    }
-
     public class InvalidArgumentFormatException<T> : CommandSystemException {
         string argument;
 

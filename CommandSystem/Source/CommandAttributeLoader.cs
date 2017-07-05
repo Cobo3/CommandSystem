@@ -6,21 +6,9 @@ namespace SickDev.CommandSystem {
     internal class CommandAttributeLoader {
         List<Command> commands = new List<Command>();
         Type[] types;
-        CommandTypeInfo[] commandTypes;
 
         public CommandAttributeLoader() {
             types = ReflectionFinder.LoadUserClassesAndStructs();
-            commandTypes = FilterCommandTypes(types);
-        }
-        
-        //Get all types derived from CommandBase and create a CommandTypeInfo for each one
-        static CommandTypeInfo[] FilterCommandTypes(Type[] types) {
-            List<CommandTypeInfo> commandTypes = new List<CommandTypeInfo>();
-            for (int i = 0; i < types.Length; i++) {
-                if (types[i].IsSubclassOf(typeof(Command)))
-                    commandTypes.Add(new CommandTypeInfo(types[i]));
-            }
-            return commandTypes.ToArray();
         }
 
         public Command[] LoadCommands() {
@@ -36,12 +24,11 @@ namespace SickDev.CommandSystem {
                 try {
                     CommandAttributeVerifier verifier = new CommandAttributeVerifier(methods[i]);
                     if (verifier.hasCommandAttribute) {
-                        Command command = verifier.ExtractCommand(commandTypes);
-                        if (command != null)
-                            commands.Add(command);
+                        Command command = verifier.ExtractCommand();
+                        commands.Add(command);
                     }
                 }
-                catch (CommandSystemException exception) {
+                catch (Exception exception) {
                     CommandsManager.SendException(exception);
                 }
             }

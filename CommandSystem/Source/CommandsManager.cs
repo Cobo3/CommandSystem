@@ -1,9 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace SickDev.CommandSystem {
     public class CommandsManager {
-        public delegate void OnExceptionThrown(CommandSystemException exception);
+        public delegate void OnExceptionThrown(Exception exception);
         public delegate void OnMessage(string message);
         public delegate void OnCommandModified(Command command);
 
@@ -57,7 +58,7 @@ namespace SickDev.CommandSystem {
             return new CommandExecuter(commands, parsedCommand);            
         }
 
-        internal static void SendException(CommandSystemException exception) {
+        internal static void SendException(Exception exception) {
             if (onExceptionThrown != null)
                 onExceptionThrown(exception);
         }
