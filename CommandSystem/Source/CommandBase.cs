@@ -10,7 +10,7 @@ namespace SickDev.CommandSystem {
         public readonly Signature signature;
         public readonly bool isAnonymous;
 
-        public bool isFunc { get { return method.Method.ReturnType != typeof(void); } }
+        public bool hasReturnValue { get { return method.Method.ReturnType != typeof(void); } }
 
         protected CommandBase(Delegate _delegate, string alias = null, string description = null) {
             method = _delegate;
@@ -26,7 +26,7 @@ namespace SickDev.CommandSystem {
         }
 
         public object Execute(object[] args) {
-            return method.DynamicInvoke(args);
+            return method.Method.Invoke(null, args);
         }
 
         public override bool Equals(object obj) {

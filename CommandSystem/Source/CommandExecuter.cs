@@ -10,7 +10,7 @@ namespace SickDev.CommandSystem {
 
         public bool isValidCommand { get { return overloads.Count >= 1; } }
         public bool canBeExecuted { get { return matches.Count == 1; } }
-        public bool hasReturnType { get { return canBeExecuted && matches[0].command.isFunc; } }
+        public bool hasReturnValue { get { return canBeExecuted && matches[0].command.hasReturnValue; } }
 
         internal CommandExecuter(List<CommandBase> commands, ParsedCommand parsedCommand) {
             this.commands = commands;
