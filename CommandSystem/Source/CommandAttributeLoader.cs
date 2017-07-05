@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SickDev.CommandSystem {
     internal class CommandAttributeLoader {
-        List<CommandBase> commands = new List<CommandBase>();
+        List<Command> commands = new List<Command>();
         Type[] types;
         CommandTypeInfo[] commandTypes;
 
@@ -17,26 +17,26 @@ namespace SickDev.CommandSystem {
         static CommandTypeInfo[] FilterCommandTypes(Type[] types) {
             List<CommandTypeInfo> commandTypes = new List<CommandTypeInfo>();
             for (int i = 0; i < types.Length; i++) {
-                if (types[i].IsSubclassOf(typeof(CommandBase)))
+                if (types[i].IsSubclassOf(typeof(Command)))
                     commandTypes.Add(new CommandTypeInfo(types[i]));
             }
             return commandTypes.ToArray();
         }
 
-        public CommandBase[] LoadCommands() {
+        public Command[] LoadCommands() {
             for (int i = 0; i < types.Length; i++)
                 commands.AddRange(LoadCommandsInType(types[i]));
             return commands.ToArray();
         }
 
-        CommandBase[] LoadCommandsInType(Type type) {
-            List<CommandBase> commands = new List<CommandBase>();
+        Command[] LoadCommandsInType(Type type) {
+            List<Command> commands = new List<Command>();
             MethodInfo[] methods = type.GetMethods(BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             for (int i = 0; i < methods.Length; i++) {
                 try {
                     CommandAttributeVerifier verifier = new CommandAttributeVerifier(methods[i]);
                     if (verifier.hasCommandAttribute) {
-                        CommandBase command = verifier.ExtractCommand(commandTypes);
+                        Command command = verifier.ExtractCommand(commandTypes);
                         if (command != null)
                             commands.Add(command);
                     }

@@ -15,14 +15,13 @@ namespace SickDev.CommandSystem {
             attribute = Attribute.GetCustomAttribute(method, typeof(CommandAttribute)) as CommandAttribute;
         }
 
-        public CommandBase ExtractCommand(CommandTypeInfo[] commandTypes) {
-            CommandBase command = null;
+        public Command ExtractCommand(CommandTypeInfo[] commandTypes) {
+            Command command = null;
             if (IsDeclarationSupported()) {
                 CheckCommandTypeMatch(commandTypes);
                 if (commandType == null)
                     throw new NoSuitableCommandFoundException(method);
-                command = (CommandBase)Activator.CreateInstance(commandType.type, Delegate.CreateDelegate(
-                    commandType.firstParameter.ParameterType, method), attribute.alias, attribute.description);
+                command = (Command)Activator.CreateInstance(typeof(Command), method, attribute.alias, attribute.description);
             }
             else
                 throw new UnsupportedCommandDeclarationException(method);

@@ -5,9 +5,9 @@ namespace SickDev.CommandSystem {
     public class CommandsManager {
         public delegate void OnExceptionThrown(CommandSystemException exception);
         public delegate void OnMessage(string message);
-        public delegate void OnCommandModified(CommandBase command);
+        public delegate void OnCommandModified(Command command);
 
-        List<CommandBase> commands = new List<CommandBase>();
+        List<Command> commands = new List<Command>();
 
         public event OnCommandModified onCommandAdded;
         public event OnCommandModified onCommandRemoved;
@@ -19,12 +19,12 @@ namespace SickDev.CommandSystem {
             Add(loader.LoadCommands());
         }
 
-        public void Add(CommandBase[] commands) {
+        public void Add(Command[] commands) {
             for (int i = 0; i < commands.Length; i++)
                 Add(commands[i]);
         }
 
-        public void Add(CommandBase command) {
+        public void Add(Command command) {
             if (!commands.Contains(command) || !commands.Any(x=>x.Equals(command))) {
                 commands.Add(command);
                 if (onCommandAdded != null)
@@ -32,19 +32,19 @@ namespace SickDev.CommandSystem {
             }
         }
 
-        public void Remove(CommandBase[] commands) {
+        public void Remove(Command[] commands) {
             for(int i = 0; i < commands.Length; i++)
                 Remove(commands[i]);
         }
 
-        public void Remove(CommandBase command) {
+        public void Remove(Command command) {
             if(commands.RemoveAll(x => x.Equals(command)) > 0) {
                 if(onCommandRemoved != null)
                     onCommandRemoved(command);
             }
         }
 
-        public CommandBase[] GetCommands() {
+        public Command[] GetCommands() {
             return commands.ToArray();
         }
 

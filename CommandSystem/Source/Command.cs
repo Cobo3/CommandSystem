@@ -1,23 +1,24 @@
 ﻿using System;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace SickDev.CommandSystem {
-    public abstract class CommandBase {
-        internal Delegate method;
+    public class Command {
+        public readonly MethodInfo method;
         public readonly string alias;
         public readonly string name;
         public readonly string description;
         public readonly Signature signature;
         public readonly bool isAnonymous;
 
-        public bool hasReturnValue { get { return method.Method.ReturnType != typeof(void); } }
+        public bool hasReturnValue { get { return method.ReturnType != typeof(void); } }
 
-        protected CommandBase(Delegate _delegate, string alias = null, string description = null) {
-            method = _delegate;
-            isAnonymous = method.Method.GetCustomAttributes(typeof(CompilerGeneratedAttribute), false).Length > 0;
+        public Command(MethodInfo _method, string alias = null, string description = null) {
+            method = _method;
+            isAnonymous = method.GetCustomAttributes(typeof(CompilerGeneratedAttribute), false).Length > 0;
             this.description = description??string.Empty;
             this.alias = alias??string.Empty;
-            name = string.IsNullOrEmpty(this.alias.Trim()) ? _delegate.Method.Name : this.alias;
+            name = this.alias.Trim() == string.Empty ? _method.Name : this.alias;
             signature = new Signature(this);
         }
 
@@ -26,14 +27,18 @@ namespace SickDev.CommandSystem {
         }
 
         public object Execute(object[] args) {
-            return method.Method.Invoke(null, args);
+            return method.Invoke(null, args);
         }
 
         public override bool Equals(object obj) {
-            CommandBase other = (CommandBase)obj;
+            Command other = (Command)obj;
             if(other == null)
                 return false;
             return other.method == method;
+        }
+
+        public override int GetHashCode() {
+            return method.GetHashCode();
         }
     }
 }

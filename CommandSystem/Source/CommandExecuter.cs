@@ -3,16 +3,16 @@
 namespace SickDev.CommandSystem {
     public class CommandExecuter {
 
-        readonly List<CommandBase> commands;
+        readonly List<Command> commands;
         readonly ParsedCommand parsedCommand;
-        List<CommandBase> overloads = new List<CommandBase>();
+        List<Command> overloads = new List<Command>();
         List<Match> matches = new List<Match>();
 
         public bool isValidCommand { get { return overloads.Count >= 1; } }
         public bool canBeExecuted { get { return matches.Count == 1; } }
         public bool hasReturnValue { get { return canBeExecuted && matches[0].command.hasReturnValue; } }
 
-        internal CommandExecuter(List<CommandBase> commands, ParsedCommand parsedCommand) {
+        internal CommandExecuter(List<Command> commands, ParsedCommand parsedCommand) {
             this.commands = commands;
             this.parsedCommand = parsedCommand;
             FilterOverloads();
@@ -52,15 +52,15 @@ namespace SickDev.CommandSystem {
             return matches[0].command.Execute(matches[0].parameters);
         }
 
-        public CommandBase[] GetOverloads() {
+        public Command[] GetOverloads() {
             return overloads.ToArray();
         }
 
         struct Match {
-            public readonly CommandBase command;
+            public readonly Command command;
             public readonly object[] parameters;
 
-            public Match(CommandBase command, object[] parameters) {
+            public Match(Command command, object[] parameters) {
                 this.command = command;
                 this.parameters = parameters;
             }

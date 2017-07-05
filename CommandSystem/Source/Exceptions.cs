@@ -86,9 +86,9 @@ namespace SickDev.CommandSystem {
 
     public class AmbiguousCommandCallException : CommandSystemException {
         string rawCall;
-        CommandBase[] matches;
+        Command[] matches;
 
-        public AmbiguousCommandCallException(string rawCall, CommandBase[] matches) {
+        public AmbiguousCommandCallException(string rawCall, Command[] matches) {
             this.rawCall = rawCall;
             this.matches = matches;
         }

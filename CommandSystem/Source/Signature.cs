@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace SickDev.CommandSystem {
     public class Signature {
-        CommandBase command;
+        Command command;
         string _raw;
 
         public ParameterInfo[] parameters { get; private set; }
@@ -11,7 +11,7 @@ namespace SickDev.CommandSystem {
         public string raw {
             get {
                 if (_raw == null)
-                    _raw = SignatureBuilder.Build(command.method.Method, command.name);
+                    _raw = SignatureBuilder.Build(command.method, command.name);
                 return _raw;
             }
         }
@@ -25,9 +25,9 @@ namespace SickDev.CommandSystem {
             }
         }
 
-        internal Signature(CommandBase command) {
+        internal Signature(Command command) {
             this.command = command;
-            parameters = command.method.Method.GetParameters();
+            parameters = command.method.GetParameters();
         }
 
         internal bool Matches(string[] args) {
