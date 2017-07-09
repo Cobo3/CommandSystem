@@ -1,8 +1,6 @@
 ============FIXES============
-- Fix space counting as extra argument after closing group, as in "'hola farola' 10". There are three args there
 - Can add delegates as commands now?
 
 ===========FEATURES==========
-- Add support for MethodInfoCommand
 - Add support for fields & properties
 - Add support for instance elements

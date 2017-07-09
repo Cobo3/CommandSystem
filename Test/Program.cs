@@ -9,7 +9,7 @@ namespace Test {
 
             CommandsManager manager = new CommandsManager();
             manager.Load();
-            Console.WriteLine(manager.GetCommandExecuter("LogRepeated \"hola farola\"10").Execute());
+            Console.WriteLine(manager.GetCommandExecuter("LogRepeated \"hola farola\" 10").Execute());
         }
 
         [Command]

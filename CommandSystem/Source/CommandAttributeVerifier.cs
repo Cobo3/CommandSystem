@@ -5,7 +5,6 @@ namespace SickDev.CommandSystem {
     internal class CommandAttributeVerifier {
         MethodInfo method;
         CommandAttribute attribute;
-        CommandSystemException exception;
 
         public bool hasCommandAttribute { get { return attribute != null; } }
         bool isDeclarationSupported { get { return !(!method.IsStatic || method.IsGenericMethod || method.IsGenericMethodDefinition); } }
@@ -18,7 +17,7 @@ namespace SickDev.CommandSystem {
         public Command ExtractCommand() {
             if (!isDeclarationSupported)
                 throw new UnsupportedCommandDeclarationException(method);
-            return (Command)Activator.CreateInstance(typeof(Command), method, attribute.alias, attribute.description);
+            return (Command)Activator.CreateInstance(typeof(MethodInfoCommand), method, attribute.alias, attribute.description);
         }
     }
 }

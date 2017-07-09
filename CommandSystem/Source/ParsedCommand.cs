@@ -21,26 +21,28 @@ namespace SickDev.CommandSystem {
         }
         
         void GetArgs() {
-            string sArgs = raw.Substring(command.Length).Trim();
-            List<string> lArgs = new List<string>();
+            string stringArgs = raw.Substring(command.Length).Trim();
+            List<string> listArgs = new List<string>();
 
             char? groupifier = null;
             string arg = string.Empty;
-            for (int i = 0; i < sArgs.Length; i++) {
-                if (sArgs[i] == separator && groupifier == null) {
-                    lArgs.Add(arg);
-                    arg = string.Empty;
+            for (int i = 0; i < stringArgs.Length; i++) {
+                if (stringArgs[i] == separator && groupifier == null) {
+                    if(!string.IsNullOrEmpty(arg)) {
+                        listArgs.Add(arg);
+                        arg = string.Empty;
+                    }
                     continue;
                 }
 
                 bool isGroupifier = false;
                 for (int j = 0; j < groupifiers.Length; j++) {
-                    if (sArgs[i] == groupifiers[j]) {
+                    if (stringArgs[i] == groupifiers[j]) {
                         isGroupifier = true;
                         if (groupifier == null)
                             groupifier = groupifiers[j];
-                        else if (groupifier == sArgs[i]) {
-                            lArgs.Add(arg);
+                        else if (groupifier == stringArgs[i]) {
+                            listArgs.Add(arg);
                             arg = string.Empty;
                             groupifier = null;
                         }
@@ -48,12 +50,12 @@ namespace SickDev.CommandSystem {
                 }
 
                 if (!isGroupifier)
-                    arg += sArgs[i];
+                    arg += stringArgs[i];
             }
 
             if (arg != string.Empty)
-                lArgs.Add(arg);
-            args = lArgs.ToArray();
+                listArgs.Add(arg);
+            args = listArgs.ToArray();
         }
     }
 }

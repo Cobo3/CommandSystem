@@ -2,6 +2,7 @@
 using System.Text;
 using System.Reflection;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace SickDev.CommandSystem {
     internal static class SignatureBuilder {
@@ -21,7 +22,6 @@ namespace SickDev.CommandSystem {
             { typeof(bool), "bool" },
             { typeof(char), "char" },
             { typeof(string), "string" },
-            { typeof(void), "void" },
             { typeof(byte?), "byte?" },
             { typeof(sbyte?), "sbyte?" },
             { typeof(short?), "short?" },
@@ -39,21 +39,24 @@ namespace SickDev.CommandSystem {
 
         public static string Build(MethodInfo method, string nameOverride = null) {
             StringBuilder signature = new StringBuilder();
-            string returnType = TypeToString(method.ReturnType);
-            if(returnType != aliases[typeof(void)]) {
+            if(method.ReturnType != typeof(void)) {
+                string returnType = TypeToString(method.ReturnType);
                 signature.Append(returnType);
                 signature.Append(" ");
             }
             signature.Append(nameOverride??method.Name);
-            ParameterInfo[] parameters = method.GetParameters();
-            if (parameters.Length > 0)
-                AddParameters(signature, parameters);
+            List<ParameterInfo> parameters = new List<ParameterInfo>(method.GetParameters());
+            parameters.RemoveAll(x => x.ParameterType == typeof(ExecutionScope));
+            if (parameters.Count > 0)
+                AddParameters(signature, parameters.ToArray());
             return signature.ToString();
         }
 
         static void AddParameters(StringBuilder signature, ParameterInfo[] parameters) {
             signature = signature.Append('(');
             for (int i = 0; i < parameters.Length; i++) {
+                if(parameters[i].ParameterType == typeof(ExecutionScope))
+                    continue;
                 AddParameter(signature, parameters[i]);
                 if (i != parameters.Length - 1)
                     signature = signature.Append(", ");
@@ -63,8 +66,10 @@ namespace SickDev.CommandSystem {
 
         static void AddParameter(StringBuilder signature, ParameterInfo parameter) {
             signature = signature.Append(TypeToString(parameter.ParameterType));
-            signature = signature.Append(" ");
-            signature = signature.Append(parameter.Name);
+            if(!string.IsNullOrEmpty(parameter.Name)) {
+                signature = signature.Append(" ");
+                signature = signature.Append(parameter.Name);
+            }
             if (parameter.IsOptional) {
                 signature = signature.Append(" = ");
                 if (parameter.DefaultValue is string)

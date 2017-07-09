@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace SickDev.CommandSystem {
     public class Command {
-        public readonly MethodInfo method;
+        internal readonly Delegate deleg;
+        public MethodInfo method;
         public readonly string alias;
         public readonly string name;
         public readonly string description;
@@ -13,12 +15,13 @@ namespace SickDev.CommandSystem {
 
         public bool hasReturnValue { get { return method.ReturnType != typeof(void); } }
 
-        public Command(MethodInfo _method, string alias = null, string description = null) {
-            method = _method;
+        public Command(Delegate _deleg, string alias = null, string description = null) {
+            deleg = _deleg;
+            method = deleg.Method;
             isAnonymous = method.GetCustomAttributes(typeof(CompilerGeneratedAttribute), false).Length > 0;
             this.description = description??string.Empty;
             this.alias = alias??string.Empty;
-            name = this.alias.Trim() == string.Empty ? _method.Name : this.alias;
+            name = this.alias.Trim() == string.Empty ? method.Name : this.alias;
             signature = new Signature(this);
         }
 
@@ -27,18 +30,18 @@ namespace SickDev.CommandSystem {
         }
 
         public object Execute(object[] args) {
-            return method.Invoke(null, args);
+            return deleg.DynamicInvoke(args);
         }
 
         public override bool Equals(object obj) {
             Command other = (Command)obj;
             if(other == null)
                 return false;
-            return other.method == method;
+            return other.deleg == deleg;
         }
 
         public override int GetHashCode() {
-            return method.GetHashCode();
+            return deleg.GetHashCode();
         }
     }
 }

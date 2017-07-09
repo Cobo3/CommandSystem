@@ -1,5 +1,7 @@
 ﻿using System.Linq;
 using System.Reflection;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace SickDev.CommandSystem {
     public class Signature {
@@ -27,7 +29,9 @@ namespace SickDev.CommandSystem {
 
         internal Signature(Command command) {
             this.command = command;
-            parameters = command.method.GetParameters();
+            List<ParameterInfo> parameters = new List<ParameterInfo>(command.method.GetParameters());
+            parameters.RemoveAll(x => x.ParameterType == typeof(ExecutionScope));
+            this.parameters = parameters.ToArray();
         }
 
         internal bool Matches(string[] args) {
