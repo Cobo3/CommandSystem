@@ -3,7 +3,11 @@ using System.Text;
 using System.Reflection;
 
 namespace SickDev.CommandSystem {
-    public class CommandSystemException : Exception { }
+    public class CommandSystemException : Exception {
+        public CommandSystemException() { }
+        public CommandSystemException(Exception innerException):base(string.Empty, innerException) { }
+    }
+
     public class InvalidCommandTypeConstructorException : CommandSystemException {
         Type type;
 
@@ -12,9 +16,7 @@ namespace SickDev.CommandSystem {
         }
 
         public override string Message {
-            get {
-                return type.Name + " does not have a valid constructor. Please, review the docs on how to create new Command types";
-            }
+            get { return type.Name + " does not have a valid constructor. Please, review the docs on how to create new Command types";  }
         }
     }
 
@@ -50,9 +52,7 @@ namespace SickDev.CommandSystem {
         }
 
         public override string Message {
-            get {
-                return "Argument \"" + argument + "\" cannot be parsed into type " + typeof(T).Name + " because it is not in the correct format";
-            }
+            get {return "Argument \"" + argument + "\" cannot be parsed into type " + typeof(T).Name + " because it is not in the correct format";}
         }
     }
 
@@ -64,9 +64,7 @@ namespace SickDev.CommandSystem {
         }
 
         public override string Message {
-            get {
-                return "No valid Parser method found for type " + type.Name+". Please, review the docs on how to create new Parser methods";
-            }
+            get {return "No valid Parser method found for type " + type.Name+". Please, review the docs on how to create new Parser methods";}
         }
     }
 
@@ -97,9 +95,7 @@ namespace SickDev.CommandSystem {
         }
 
         public override string Message {
-            get {
-                return "No command found with name or alias '" + command.command + "'";
-            }
+            get {return "No command found with name or alias '" + command.command + "'";}
         }
     }
 
@@ -111,9 +107,7 @@ namespace SickDev.CommandSystem {
         }
 
         public override string Message {
-            get {
-                return "No overload found for command " + command.raw;
-            }
+            get {return "No overload found for command " + command.raw;}
         }
     }
 
@@ -125,8 +119,23 @@ namespace SickDev.CommandSystem {
         }
 
         public override string Message {
+            get {return "More than one Parser was specified for type " + parser.type + ".Please, note that most common types already have a built-in Parser"; }
+        }
+    }
+
+    public class CommandBuildingException : CommandSystemException {
+        Type type;
+        MemberInfo member;
+
+        public CommandBuildingException(Type type, MemberInfo member, Exception innerException):base(innerException) {
+            this.type = type;
+            this.member = member;
+        }
+
+        public override string Message {
             get {
-                return "More than one Parser was specified for type " + parser.type + ".Please, note that most common types already have a built-in Parser";
+                return "There was an error creating a command for "+member.MemberType+" "+ member.Name + " of type " + type.Name + ". Skipping command.\n" +
+                    "Error Message: " + InnerException.Message + "\nStackTrace" + InnerException.StackTrace;
             }
         }
     }

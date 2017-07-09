@@ -47,19 +47,29 @@ namespace SickDev.CommandSystem {
                 ConstantExpression fieldConstant = Expression.Constant(fields[i]);
 
                 if(fieldsSettings.commandCreationBindings.HasFlag(CommandCreationBindings.Getter)) {
-                    MethodCallExpression methodCall = Expression.Call(fieldConstant, getValueMethod, nullConstant);
-                    UnaryExpression convertExpression = Expression.Convert(methodCall, fields[i].FieldType);
-                    Type delegateType = typeof(Func<>).MakeGenericType(fields[i].FieldType);
-                    LambdaExpression lambdaExpression = Expression.Lambda(delegateType, convertExpression);
-                    ProcessFieldLamdaExpression(fields[i], lambdaExpression);
+                    try {
+                        MethodCallExpression methodCall = Expression.Call(fieldConstant, getValueMethod, nullConstant);
+                        UnaryExpression convertExpression = Expression.Convert(methodCall, fields[i].FieldType);
+                        Type delegateType = typeof(Func<>).MakeGenericType(fields[i].FieldType);
+                        LambdaExpression lambdaExpression = Expression.Lambda(delegateType, convertExpression);
+                        ProcessFieldLamdaExpression(fields[i], lambdaExpression);
+                    }
+                    catch(Exception e) {
+                        CommandsManager.SendException(new CommandBuildingException(type, fields[i], e));
+                    }
                 }
                 if(fieldsSettings.commandCreationBindings.HasFlag(CommandCreationBindings.Setter)) {
                     if(!fields[i].IsInitOnly && !fields[i].IsLiteral) {
-                        UnaryExpression convertExpression = Expression.Convert(valueParameter, typeof(object));
-                        MethodCallExpression methodCall = Expression.Call(fieldConstant, setValueMethod, nullConstant, convertExpression);
-                        Type delegateType = typeof(Action<>).MakeGenericType(fields[i].FieldType);
-                        LambdaExpression lambdaExpression = Expression.Lambda(delegateType, methodCall, valueParameter);
-                        ProcessFieldLamdaExpression(fields[i], lambdaExpression);
+                        try {
+                            UnaryExpression convertExpression = Expression.Convert(valueParameter, typeof(object));
+                            MethodCallExpression methodCall = Expression.Call(fieldConstant, setValueMethod, nullConstant, convertExpression);
+                            Type delegateType = typeof(Action<>).MakeGenericType(fields[i].FieldType);
+                            LambdaExpression lambdaExpression = Expression.Lambda(delegateType, methodCall, valueParameter);
+                            ProcessFieldLamdaExpression(fields[i], lambdaExpression);
+                        }
+                        catch(Exception e) {
+                            CommandsManager.SendException(new CommandBuildingException(type, fields[i], e));
+                        }
                     }
                 }
             }
@@ -82,15 +92,27 @@ namespace SickDev.CommandSystem {
         }
 
         void ProcessPropertyMethod(PropertyInfo property, MethodInfo method) {
-            if(method.IsPublic && propertiesSettings.accesModiferBindings.HasFlag(AccesModifierBindings.Public) ||
-                !method.IsPublic && propertiesSettings.accesModiferBindings.HasFlag(AccesModifierBindings.NonPublic))
-                commands.Add(new MethodInfoCommand(method, GetComposedName(property)));
+            try {
+                if(method.IsPublic && propertiesSettings.accesModiferBindings.HasFlag(AccesModifierBindings.Public) ||
+                    !method.IsPublic && propertiesSettings.accesModiferBindings.HasFlag(AccesModifierBindings.NonPublic)) {
+                    commands.Add(new MethodInfoCommand(method, GetComposedName(property)));
+                }
+            }
+            catch(Exception e) {
+                CommandsManager.SendException(new CommandBuildingException(type, property, e));
+            }
         }
 
         void BuildMethods() {
             MethodInfo[] methods = GetMethods(methodsSettings);
-            for(int i = 0; i < methods.Length; i++)
-                commands.Add(new MethodInfoCommand(methods[i], GetComposedName(methods[i])));
+            for(int i = 0; i < methods.Length; i++) {
+                try {
+                    commands.Add(new MethodInfoCommand(methods[i], GetComposedName(methods[i])));
+                }
+                catch(Exception e) {
+                    CommandsManager.SendException(new CommandBuildingException(type, methods[i], e));
+                }
+            }
         }
 
         FieldInfo[] GetFields(MemberBuilderSettings settings) {
