@@ -48,6 +48,7 @@
     <Compile Include="Source\CommandAttributeVerifier.cs" />
     <Compile Include="Source\Command.cs" />
     <Compile Include="Source\CommandExecuter.cs" />
+    <Compile Include="Source\CommandsBuilder.cs" />
     <Compile Include="Source\CommandsManager.cs" />
     <Compile Include="Source\CommandTypes.cs" />
     <Compile Include="Source\Config.cs" />
