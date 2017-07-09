@@ -30,16 +30,18 @@ namespace SickDev.CommandSystem {
             }
         }
 
-        bool HasParserForType(Type type) {
-            return parsers.ContainsKey(type);
-        }
-
         //Given a type, looks for a corresponding Parser method
         public object Parse(string value, Type type) {
-            if (HasParserForType(type))
+            if(type.IsEnum)
+                return Enum.Parse(type, value);
+            else if (HasParserForType(type))
                 return parsers[type].Invoke(null, new object[] { value });
             else
                 throw new NoValidParserFoundException(type);
+        }
+
+        bool HasParserForType(Type type) {
+            return parsers.ContainsKey(type);
         }
     }
 }
