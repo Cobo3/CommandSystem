@@ -1,11 +1,13 @@
 ﻿/*This File provides various Parser methods used for some common Types*/
 namespace SickDev.CommandSystem {
     static class Parsers {
+        [Parser(typeof(object))]
+        static object ParseObject(string value) {
+            return ParseString(value);
+        }
 
         const string nullObject = "null";
-        /**********************************************
-		* C# primitive types
-		**********************************************/
+
         [Parser(typeof(string))]
         static string ParseString(string value) {
             return value.Equals(nullObject) ? null : value;
