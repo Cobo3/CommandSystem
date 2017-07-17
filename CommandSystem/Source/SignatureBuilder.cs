@@ -37,14 +37,14 @@ namespace SickDev.CommandSystem {
             { typeof(char?), "char?" },
         };
 
-        public static string Build(MethodInfo method, string nameOverride = null) {
+        public static string Build(MethodInfo method, string name) {
             StringBuilder signature = new StringBuilder();
             if(method.ReturnType != typeof(void)) {
                 string returnType = TypeToString(method.ReturnType);
                 signature.Append(returnType);
                 signature.Append(" ");
             }
-            signature.Append(nameOverride??method.Name);
+            signature.Append(name);
             List<ParameterInfo> parameters = new List<ParameterInfo>(method.GetParameters());
             parameters.RemoveAll(x => x.ParameterType == typeof(ExecutionScope));
             if (parameters.Count > 0)

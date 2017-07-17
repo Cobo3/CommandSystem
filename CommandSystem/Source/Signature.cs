@@ -35,7 +35,7 @@ namespace SickDev.CommandSystem {
         }
 
         internal bool Matches(string[] args) {
-            return args.Length == parameters.Length || args.Length == parameters.Count(x => !x.IsOptional);
+            return args.Length >= parameters.Count(x => !x.IsOptional) && args.Length <= parameters.Length;
         }
 
         internal object[] Convert(string[] args) {

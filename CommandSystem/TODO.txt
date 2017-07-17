@@ -2,5 +2,7 @@
 - Can add delegates as commands now?
 
 ===========FEATURES==========
+- Help for enums
+- Parse arrays (return and args)
 - Add support for fields & properties
 - Add support for instance elements
