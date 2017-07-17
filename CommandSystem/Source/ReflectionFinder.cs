@@ -4,25 +4,54 @@ using System.Reflection;
 using System.Collections.Generic;
 
 namespace SickDev.CommandSystem {
-    internal static class ReflectionFinder {        
-        static Type[] cache;
-        
-        public static Type[] LoadUserClassesAndStructs(bool reload = false) {
-            if(reload || cache == null) {
-                List<Type> types = new List<Type>();
-                Assembly[] assemblies = GetAssembliesWithCommands();
-                CommandsManager.SendMessage("Loading CommandSystem data from: " +
-                    String.Join(", ", assemblies.ToList().ConvertAll(x => {
-                        AssemblyName name = x.GetName();
-                        string path = name.CodeBase;
-                        string extension = path.Substring(path.LastIndexOf('.'));
-                        return name.Name + extension;
-                    }).ToArray()) + ".");
-                for (int i = 0; i < assemblies.Length; i++)
-                    types.AddRange(assemblies[i].GetTypes());
-                cache = types.Where(x => x.IsClass || x.IsValueType && !x.IsEnum).ToArray();
+    internal static class ReflectionFinder {
+        static Type[] _allTypes;
+        static Type[] allTypes {
+            get {
+                if(_allTypes == null)
+                    _allTypes = LoadAllTypes().ToArray();
+                return _allTypes;
             }
-            return cache;
+        }
+
+        static Type[] _userTypes;
+        static Type[] userTypes {
+            get {
+                if(_userTypes == null)
+                    _userTypes = LoadUserTypes().ToArray();
+                return _userTypes;
+            }
+        }
+
+        static List<Type> LoadAllTypes() {
+            List<Type> types = new List<Type>();
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();            
+            for(int i = 0; i < assemblies.Length; i++)
+                types.AddRange(assemblies[i].GetTypes());
+            return types;
+        }
+
+        static List<Type> LoadUserTypes() {
+            List<Type> types = new List<Type>();
+            Assembly[] assemblies = GetAssembliesWithCommands();
+            CommandsManager.SendMessage("Loading CommandSystem data from: " +
+                String.Join(", ", assemblies.ToList().ConvertAll(x => {
+                    AssemblyName name = x.GetName();
+                    string path = name.CodeBase;
+                    string extension = path.Substring(path.LastIndexOf('.'));
+                    return name.Name + extension;
+                }).ToArray()) + ".");
+            for (int i = 0; i < assemblies.Length; i++)
+                types.AddRange(assemblies[i].GetTypes());
+            return types;
+        }
+        
+        public static Type[] LoadClassesAndStructs() {
+            return userTypes.Where(x => x.IsClass || x.IsValueType && !x.IsEnum).ToArray();
+        }
+
+        public static Type[] LoadEnums() {
+            return allTypes.Where(x => x.IsEnum).ToArray();
         }
 
         static Assembly[] GetAssembliesWithCommands() {

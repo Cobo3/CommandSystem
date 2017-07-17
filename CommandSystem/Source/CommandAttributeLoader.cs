@@ -8,7 +8,7 @@ namespace SickDev.CommandSystem {
         Type[] types;
 
         public CommandAttributeLoader() {
-            types = ReflectionFinder.LoadUserClassesAndStructs();
+            types = ReflectionFinder.LoadClassesAndStructs();
         }
 
         public Command[] LoadCommands() {
