@@ -10,10 +10,6 @@ namespace Test {
             CommandsManager manager = new CommandsManager();
             manager.Load();
             manager.Add(new CommandsBuilder(typeof(Program)).Build());
-            Console.WriteLine(manager.GetCommandExecuter("get_test").Execute());
         }
-
-        [Obsolete]
-        public static int test{get; set;}
     }
 }

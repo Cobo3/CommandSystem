@@ -11,21 +11,12 @@ namespace SickDev.CommandSystem {
         string _groupPrefix;
         Type type;
         List<Command> commands = new List<Command>();
-        PropertyInfo[] _propertiesRelevantToMethodSettings;
 
         public PropertyBuilderSettings fieldsSettings { get; set; }
         public PropertyBuilderSettings propertiesSettings { get; set; }
         public MemberBuilderSettings methodsSettings { get; set; }
         public bool addClassName { get; set; }
         public Command[] lastBuiltCommands { get { return commands.ToArray(); } }
-
-        PropertyInfo[] propertiesRelevantToMethodSettings {
-            get {
-                if(_propertiesRelevantToMethodSettings == null)
-                    _propertiesRelevantToMethodSettings = type.GetProperties(GetBindingFlagsForSettings(methodsSettings));
-                return _propertiesRelevantToMethodSettings;
-            }
-        }
 
         public string groupPrefix {
             get { return addClassName ? type.Name + "." : string.IsNullOrEmpty(_groupPrefix)?string.Empty:_groupPrefix+"."; }
@@ -121,7 +112,7 @@ namespace SickDev.CommandSystem {
         void BuildMethods() {
             MethodInfo[] methods = GetMethods(methodsSettings);
             for(int i = 0; i < methods.Length; i++) {
-                if(MethodIsPropertyAccessor(methods[i]))
+                if(methods[i].IsSpecialName)
                     continue;
                 try {
                     commands.Add(new MethodInfoCommand(methods[i], GetComposedName(methods[i])));
@@ -165,10 +156,6 @@ namespace SickDev.CommandSystem {
                 flags |= BindingFlags.Static;
 
             return flags;
-        }
-
-        bool MethodIsPropertyAccessor(MethodInfo method) {
-            return propertiesRelevantToMethodSettings.Any(property => property.GetGetMethod(true) == method || property.GetSetMethod(true) == method);
         }
 
         string GetComposedName(MemberInfo member) {
