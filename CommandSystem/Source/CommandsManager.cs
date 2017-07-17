@@ -49,6 +49,10 @@ namespace SickDev.CommandSystem {
             return commands.ToArray();
         }
 
+        public object Execute(string text) {
+            return GetCommandExecuter(text).Execute();
+        }
+
         public CommandExecuter GetCommandExecuter(string text) {
             ParsedCommand parsedCommand = new ParsedCommand(text);
             return GetCommandExecuter(parsedCommand);

@@ -34,10 +34,20 @@ namespace SickDev.CommandSystem {
         public object Parse(string value, Type type) {
             if(type.IsEnum)
                 return Enum.Parse(type, value);
-            else if (HasParserForType(type))
+            if(type.IsArray) 
+                return HandleArrayType(value, type);
+            else if(HasParserForType(type))
                 return parsers[type].Invoke(null, new object[] { value });
             else
                 throw new NoValidParserFoundException(type);
+        }
+
+        object HandleArrayType(string value, Type type) {
+            ParsedCommand parsedArray = new ParsedCommand("command " + value);
+            Array array = (Array)Activator.CreateInstance(type, parsedArray.args.Length);
+            for(int i = 0; i < parsedArray.args.Length; i++)
+                array.SetValue(Parse(parsedArray.args[i], type.GetElementType()), i);
+            return array;
         }
 
         bool HasParserForType(Type type) {

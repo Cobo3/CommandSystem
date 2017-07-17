@@ -39,11 +39,6 @@ namespace SickDev.CommandSystem {
         }
 
         internal object[] Convert(string[] args) {
-            object[] oArgs = GetArguments(args);
-            return oArgs;
-        }
-
-        object[] GetArguments(string[] args) {
             object[] oArgs = new object[parameters.Length];
             for (int i = 0; i < oArgs.Length; i++) {
                 if (args.Length > i)
