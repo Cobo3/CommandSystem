@@ -9,13 +9,11 @@ namespace Test {
 
             CommandsManager manager = new CommandsManager();
             manager.Load();
-            Console.WriteLine(manager.GetCommandExecuter("LogRepeated \"hola farola\" 10").Execute());
+            manager.Add(new CommandsBuilder(typeof(Program)).Build());
+            Console.WriteLine(manager.GetCommandExecuter("get_test").Execute());
         }
 
-        [Command]
-        static void LogRepeated(string text, int count) {
-            for(int i = 0; i < count; i++)
-                Console.WriteLine(text);
-        }
+        [Obsolete]
+        public static int test{get; set;}
     }
 }

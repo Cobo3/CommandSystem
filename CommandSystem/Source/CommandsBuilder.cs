@@ -11,12 +11,21 @@ namespace SickDev.CommandSystem {
         string _groupPrefix;
         Type type;
         List<Command> commands = new List<Command>();
+        PropertyInfo[] _propertiesRelevantToMethodSettings;
 
         public PropertyBuilderSettings fieldsSettings { get; set; }
         public PropertyBuilderSettings propertiesSettings { get; set; }
         public MemberBuilderSettings methodsSettings { get; set; }
         public bool addClassName { get; set; }
         public Command[] lastBuiltCommands { get { return commands.ToArray(); } }
+
+        PropertyInfo[] propertiesRelevantToMethodSettings {
+            get {
+                if(_propertiesRelevantToMethodSettings == null)
+                    _propertiesRelevantToMethodSettings = type.GetProperties(GetBindingFlagsForSettings(methodsSettings));
+                return _propertiesRelevantToMethodSettings;
+            }
+        }
 
         public string groupPrefix {
             get { return addClassName ? type.Name + "." : string.IsNullOrEmpty(_groupPrefix)?string.Empty:_groupPrefix+"."; }
@@ -112,6 +121,8 @@ namespace SickDev.CommandSystem {
         void BuildMethods() {
             MethodInfo[] methods = GetMethods(methodsSettings);
             for(int i = 0; i < methods.Length; i++) {
+                if(MethodIsPropertyAccessor(methods[i]))
+                    continue;
                 try {
                     commands.Add(new MethodInfoCommand(methods[i], GetComposedName(methods[i])));
                 }
@@ -156,6 +167,10 @@ namespace SickDev.CommandSystem {
             return flags;
         }
 
+        bool MethodIsPropertyAccessor(MethodInfo method) {
+            return propertiesRelevantToMethodSettings.Any(property => property.GetGetMethod(true) == method || property.GetSetMethod(true) == method);
+        }
+
         string GetComposedName(MemberInfo member) {
             return groupPrefix + member.Name;
         }
@@ -168,6 +183,7 @@ namespace SickDev.CommandSystem {
             public AccesModifierBindings accesModiferBindings { get; set; }
             public string[] nameExceptions { get; private set; }
             public MemberInfo[] memberExceptions { get; private set; }
+            public bool includeObsolete { get; set; }
 
             public MemberBuilderSettings() {
                 staticBindings = StaticBindings.Static;
@@ -193,7 +209,12 @@ namespace SickDev.CommandSystem {
                 for(int i = 0; i < nameExceptions.Length; i++)
                     if(member.Name == nameExceptions[i])
                         return true;
-                return false;
+
+                if(includeObsolete)
+                    return true;
+
+                object[] attributes = member.GetCustomAttributes(typeof(ObsoleteAttribute), true);
+                return attributes.Length > 0;
             }
         }
 
