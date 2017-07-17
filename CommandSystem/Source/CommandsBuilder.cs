@@ -8,6 +8,7 @@ namespace SickDev.CommandSystem {
     public class CommandsBuilder {
         static List<FieldInfo> fields = new List<FieldInfo>();
 
+        string _groupPrefix;
         Type type;
         List<Command> commands = new List<Command>();
 
@@ -16,6 +17,11 @@ namespace SickDev.CommandSystem {
         public MemberBuilderSettings methodsSettings { get; set; }
         public bool addClassName { get; set; }
         public Command[] lastBuiltCommands { get { return commands.ToArray(); } }
+
+        public string groupPrefix {
+            get { return addClassName ? type.Name + "." : string.IsNullOrEmpty(_groupPrefix)?string.Empty:_groupPrefix+"."; }
+            set { _groupPrefix = value; }
+        }
 
         public CommandsBuilder(Type type) {
             this.type = type;
@@ -151,7 +157,7 @@ namespace SickDev.CommandSystem {
         }
 
         string GetComposedName(MemberInfo member) {
-            return addClassName ? type.Name + "." + member.Name : member.Name;
+            return groupPrefix + member.Name;
         }
 
         public class MemberBuilderSettings {
