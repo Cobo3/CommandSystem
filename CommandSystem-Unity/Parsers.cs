@@ -82,7 +82,30 @@ namespace SickDev.CommandSystem {
 
         [Parser(typeof(GameObject))]
         static GameObject ParseGameObject(string value) {
-            return GameObject.Find(value);
+            if(value.StartsWith("res:"))
+                return Resources.Load<GameObject>(value.Substring(4).Trim());
+            else
+                return GameObject.Find(value);
+        }
+
+        [Parser(typeof(Texture2D))]
+        static Texture2D ParseTexture2D(string value) {
+            return Resources.Load<Texture2D>(value);
+        }
+
+        [Parser(typeof(Sprite))]
+        static Sprite ParseSprite(string value) {
+            return Resources.Load<Sprite>(value);
+        }
+
+        [Parser(typeof(AudioClip))]
+        static AudioClip ParseAudioClip(string value) {
+            return Resources.Load<AudioClip>(value);
+        }
+
+        [Parser(typeof(Material))]
+        static Material ParseMaterial(string value) {
+            return Resources.Load<Material>(value);
         }
     }
 }
