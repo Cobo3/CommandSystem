@@ -6,8 +6,6 @@ using System.Collections.Generic;
 
 namespace SickDev.CommandSystem {
     public class CommandsBuilder {
-        static List<FieldInfo> fields = new List<FieldInfo>();
-
         string _groupPrefix;
         Type type;
         List<Command> commands = new List<Command>();
@@ -45,14 +43,13 @@ namespace SickDev.CommandSystem {
             ConstantExpression nullConstant = Expression.Constant(null);
 
             for(int i = 0; i < fields.Length; i++) {
-                if(fieldsSettings.commandCreationBindings == CommandCreationBindings.None)
+                if(fieldsSettings.accessorCreationBindings == AccessorCreationBindings.None)
                     continue;
 
-                CommandsBuilder.fields.Add(fields[i]);
                 ParameterExpression valueParameter = Expression.Parameter(fields[i].FieldType, "value");
                 ConstantExpression fieldConstant = Expression.Constant(fields[i]);
 
-                if(fieldsSettings.commandCreationBindings.HasFlag(CommandCreationBindings.Getter)) {
+                if(fieldsSettings.accessorCreationBindings.HasFlag(AccessorCreationBindings.Getter)) {
                     try {
                         MethodCallExpression methodCall = Expression.Call(fieldConstant, getValueMethod, nullConstant);
                         UnaryExpression convertExpression = Expression.Convert(methodCall, fields[i].FieldType);
@@ -64,7 +61,7 @@ namespace SickDev.CommandSystem {
                         CommandsManager.SendException(new CommandBuildingException(type, fields[i], e));
                     }
                 }
-                if(fieldsSettings.commandCreationBindings.HasFlag(CommandCreationBindings.Setter)) {
+                if(fieldsSettings.accessorCreationBindings.HasFlag(AccessorCreationBindings.Setter)) {
                     if(!fields[i].IsInitOnly && !fields[i].IsLiteral) {
                         try {
                             UnaryExpression convertExpression = Expression.Convert(valueParameter, typeof(object));
@@ -90,9 +87,9 @@ namespace SickDev.CommandSystem {
         void BuildProperties() {
             PropertyInfo[] properties = GetProperties(propertiesSettings);
             for(int i = 0; i < properties.Length; i++) {
-                if(propertiesSettings.commandCreationBindings.HasFlag(CommandCreationBindings.Getter) && properties[i].CanRead)
+                if(propertiesSettings.accessorCreationBindings.HasFlag(AccessorCreationBindings.Getter) && properties[i].CanRead)
                     ProcessPropertyMethod(properties[i], properties[i].GetGetMethod(true));
-                if(propertiesSettings.commandCreationBindings.HasFlag(CommandCreationBindings.Setter) && properties[i].CanWrite)
+                if(propertiesSettings.accessorCreationBindings.HasFlag(AccessorCreationBindings.Setter) && properties[i].CanWrite)
                     ProcessPropertyMethod(properties[i], properties[i].GetSetMethod(true));
             }
         }
@@ -206,15 +203,15 @@ namespace SickDev.CommandSystem {
         }
 
         public class PropertyBuilderSettings : MemberBuilderSettings {
-            public CommandCreationBindings commandCreationBindings { get; private set; }
+            public AccessorCreationBindings accessorCreationBindings { get; set; }
 
             public PropertyBuilderSettings() : base() {
-                commandCreationBindings = CommandCreationBindings.Both;
+                accessorCreationBindings = AccessorCreationBindings.Both;
             }
         }
 
         [Flags]
-        public enum CommandCreationBindings { None = 0, Getter = 1, Setter = 2, Both = Getter | Setter }
+        public enum AccessorCreationBindings { None = 0, Getter = 1, Setter = 2, Both = Getter | Setter }
         [Flags]
         public enum StaticBindings { None = 0, Static = 1, Instance = 2, All = Static | Instance }
         [Flags]
