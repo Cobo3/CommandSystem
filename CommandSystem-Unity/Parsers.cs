@@ -67,6 +67,31 @@ namespace SickDev.CommandSystem {
             return new Color(values[0], values[1], values[2], array.Length > 3 ? values[3] : 1);
         }
 
+        [Parser(typeof(Color32))]
+        static Color ParseColor32(string value) {
+            string[] array = value.Split(' ');
+            if(array.Length < 3 || array.Length > 4)
+                throw new InvalidArgumentFormatException<Color32>(value);
+            byte[] values = new byte[array.Length];
+            for(int i = 0; i < array.Length; i++) {
+                if(!byte.TryParse(array[i].Trim(), out values[i]))
+                    throw new InvalidArgumentFormatException<Color32>(value);
+            }
+            return new Color32(values[0], values[1], values[2], array.Length > 3 ? values[3] : (byte)255);
+        }
+
+        [Parser(typeof(Hash128))]
+        static Hash128 ParseHash128(string value) {
+            return Hash128.Parse(value);
+        }
+
+#if UNITY_5_3_OR_NEWER
+        [Parser(typeof(UnityEngine.SceneManagement.Scene))]
+        static UnityEngine.SceneManagement.Scene ParseScene(string value) {
+            return UnityEngine.SceneManagement.SceneManager.GetSceneByName(value);
+        }
+#endif
+
         [Parser(typeof(Rect))]
         static Rect ParseRect(string value) {
             string[] array = value.Split(' ');
