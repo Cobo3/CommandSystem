@@ -99,15 +99,15 @@ namespace SickDev.CommandSystem {
         }
     }
 
-    public class OverloadNotFoundException : CommandSystemException {
+    public class MatchNotFoundException : CommandSystemException {
         ParsedCommand command;
 
-        public OverloadNotFoundException(ParsedCommand command) {
+        public MatchNotFoundException(ParsedCommand command) {
             this.command = command;
         }
 
         public override string Message {
-            get {return "No overload found for command " + command.raw;}
+            get {return "No match found for command " + command.raw;}
         }
     }
 

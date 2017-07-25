@@ -7,7 +7,7 @@ namespace SickDev.CommandSystem {
         readonly ParsedCommand parsedCommand;
         List<Command> overloads = new List<Command>();
         List<Match> matches = new List<Match>();
-
+        
         public bool isValidCommand { get { return overloads.Count >= 1; } }
         public bool canBeExecuted { get { return matches.Count == 1; } }
         public bool hasReturnValue { get { return canBeExecuted && matches[0].command.hasReturnValue; } }
@@ -40,23 +40,26 @@ namespace SickDev.CommandSystem {
         }
 
         public object Execute() {
-            if(!isValidCommand)
-                throw new CommandNotFoundException(parsedCommand);
-
-            if (matches.Count > 1)
-                throw new AmbiguousCommandCallException(parsedCommand.raw, matches.ConvertAll(x=>x.command).ToArray());
-
-            if (matches.Count == 0)
-                throw new OverloadNotFoundException(parsedCommand);
-
-            return matches[0].command.Execute(matches[0].parameters);
+            Match match = GetMatch();
+            return match.command.Execute(match.parameters);
         }
 
         public Command[] GetOverloads() {
             return overloads.ToArray();
         }
 
-        struct Match {
+        public Match GetMatch() {
+            if(!isValidCommand)
+                throw new CommandNotFoundException(parsedCommand);
+            if (matches.Count > 1)
+                throw new AmbiguousCommandCallException(parsedCommand.raw, matches.ConvertAll(x=>x.command).ToArray());
+            if (matches.Count == 0)
+                throw new MatchNotFoundException(parsedCommand);
+
+            return matches[0];
+        }
+
+        public struct Match {
             public readonly Command command;
             public readonly object[] parameters;
 
