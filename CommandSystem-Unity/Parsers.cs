@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace SickDev.CommandSystem {
+namespace SickDev.CommandSystem.Unity {
     static class Parsers {
         [Parser(typeof(Vector2))]
         static Vector2 ParseVector2(string value) {
