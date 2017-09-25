@@ -31,10 +31,15 @@ Commands can be created in three differet ways.
 - Using the CommandAttribute
 - Using the CommandsBuilder
 
+|                   | Static Members | Instance Members | Methods | Delegates & MethodInfo | Properties | Variables | Add/Remove in Runtime |
+|-------------------|:--------------:|:----------------:|:-------:|:----------------------:|:----------:|:---------:|:---------------------:|
+| Manually          |        X       |         X        |    X    |            X           |            |           |           X           |
+| Command Attribute |        X       |                  |    X    |                        |            |           |                       |
+| Commands Builder  |        X       |                  |    X    |                        |      X     |     X     |           X           |
+
 #### Manually
-The good thing about using this method is that you can add and remove Commands at runtime; which can be good for, say, a text-based videogame.
-Another good thing about this method is that you can use instance methods.
-The bad thing, however, is that you have to do it manually.
+Manually adding commands can prove useful when all you need is flexibility. However, it is tedious for large amounts or commands or when you just need a quick solution.
+It is the only of the three methods that allows for instance methods and the useage of delegates and MethodInfo. It is limited, however, in that it does not allow to directly acces properties or variables. To do that, it is advised to create a wraper delegate.
 
 Using this method, you first need to create the command and then add it to the CommandsManager. A command can be created using one of the different CommandType classes, depending on your needs. CommandTypes are separated between ActionCommands and FuncCommands, just like .NET delegates.
 
@@ -60,9 +65,4 @@ static bool ExampleFuncCommand(int number, string stringNumber){
     return int.TryParse(stringNumber, out parsedNumber) && parsedNumber == number;
 }
 ```
-
-                   Rename Commands    Static Members    Instance Members    Methods    Properties    Variables    Runtime
-Manually                  O                 O                   O              O           X             X           O
-CommandAttribute          O                 O                   X              O           X             X           X
-CommandsBuilder           X                 O                   X              O           O             O           O
-(Add use delegates)
+There is a third CommandType called MethodInfoCommand that can be used when you need to convert a MethodInfo into a command. 
