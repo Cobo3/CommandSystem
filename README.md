@@ -14,6 +14,7 @@ The Assembly "CommandSystem-Unity" ads some special functionality to be used in 
 2. Create and add Commands
 3. Execute a Command
 4. \(Optional) Create custom Parsers
+5. \(Optional) Create custom CommandTypes
 
 ### Create a Commands Manager
 The class CommandsManager is the main interface through the system, and you'll need one if you plan on using it.
@@ -65,4 +66,64 @@ static bool ExampleFuncCommand(int number, string stringNumber){
     return int.TryParse(stringNumber, out parsedNumber) && parsedNumber == number;
 }
 ```
-There is a third CommandType called MethodInfoCommand that can be used when you need to convert a MethodInfo into a command. 
+There is a third CommandType called MethodInfoCommand that can be used when you need to convert a MethodInfo into a command.
+
+#### Using the Command Attribute
+In order to use this method, just place the Command attribute on a static method and it will be available out of the box.
+It is great when you need something quick and don't want to bother adding the command manually.
+
+In order to be able to use these type of commands, you need to load them calling the "Load" method in the CommandsManager. That will search all the commands of this type and load them into the manager. In order to do that, however, you first need to specify where the manager should search.
+
+```C#
+using SickDev.CommandSystem;
+
+static void Main(string[] args){
+    CommandsManager manager = new CommandsManager();
+    Config.AddAssemblyWithCommands("Your assembly name");
+    manager.Load();
+}
+
+[Command]
+static void ExampleCommandAttribute(){
+    Console.WriteLine("Command called!");
+}
+```
+
+#### Using the Commands Builder
+Using the CommandsBuilder is the perfect solution when you need to mass generate commands. It uses reflection to get members from a Type and converting them into commands. The downside is that it only work with instance members.
+
+For a full example on how to use it, see the [BuiltInCommandsBuilder.cs](CommandSystem-Unity/BuiltInCommandsBuilder.cs) file.
+
+### Execute a Command
+Parsing a string into a command call is as easy as calling the method "Execute" on the CommandManager.
+For aditional options, you can also call "GetCommandExecuter".
+
+```C#
+using SickDev.CommandSystem;
+
+static void Main(string[] args){
+    CommandsManager manager = new CommandsManager();
+    Command funcCommand = new FuncCommand<int, string, bool>(ExampleFuncCommand);    
+    manager.Add(funcCommand);
+    
+    Console.WriteLine(manager.Execute("ExampleFuncCommand 2 2"));
+}
+
+static bool ExampleFuncCommand(int number, string stringNumber){
+    int parsedNumber;
+    return int.TryParse(stringNumber, out parsedNumber) && parsedNumber == number;
+}
+```
+
+#### The Command Executer
+In order to determine which command to execute, if any, the commands manager looks for every overload of the command; that is, commands that have the same name as the one in the input text. After that, overloads are filtered out by those that have the  same number of arguments and that successfully pass the conversion of the input arguments into their argument types. Those that successfully pass the test are considered command matches: commands with the potential of being executed.
+
+If no overloads are found, a CommandNotFoundException is thrown.
+If one or more overloads are found, but there are no matches, a MatchNotFoundException is thrown.
+If more than one match is found, an AmbiguousCommandCallException is thrown.
+If exactly one match is found, the command is invoked.
+
+#### The ParsedCommand
+The ParsedCommand class is responsible for transforming the raw input text into a command name and its arguments. In order to do so, the text 
+
+ - Parsing the parameters
