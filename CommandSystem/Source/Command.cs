@@ -4,13 +4,13 @@ using System.Runtime.CompilerServices;
 
 namespace SickDev.CommandSystem {
     public class Command {
-        internal readonly Delegate deleg;
-        public MethodInfo method;
-        public readonly string alias;
-        public readonly string name;
+        readonly Delegate deleg;
+        public readonly MethodInfo method;
         public readonly string description;
         public readonly Signature signature;
         public readonly bool isAnonymous;
+
+        public string name { get; set; }
 
         public bool hasReturnValue { get { return method.ReturnType != typeof(void); } }
 
@@ -19,8 +19,7 @@ namespace SickDev.CommandSystem {
             method = deleg.Method;
             isAnonymous = method.GetCustomAttributes(typeof(CompilerGeneratedAttribute), false).Length > 0;
             this.description = description??string.Empty;
-            this.alias = alias??string.Empty;
-            name = this.alias.Trim() == string.Empty ? method.Name : this.alias;
+            name = string.IsNullOrEmpty(alias) ? method.Name : alias;
             signature = new Signature(this);
         }
 

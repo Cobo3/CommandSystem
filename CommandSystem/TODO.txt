@@ -2,6 +2,6 @@
 - Can add delegates as commands now?
 
 ===========FEATURES==========
-- Load/Unload commands at runtime
+- Load/Unload commands at runtime from CommandsBuilder
 - Add support for fields & properties
 - Add support for instance elements
