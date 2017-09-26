@@ -124,6 +124,22 @@ If more than one match is found, an AmbiguousCommandCallException is thrown.
 If exactly one match is found, the command is invoked.
 
 #### The ParsedCommand
-The ParsedCommand class is responsible for transforming the raw input text into a command name and its arguments. In order to do so, the text 
+The ParsedCommand class is responsible for transforming the raw input text into a command name and its arguments. The first space marks the end of the command name, and every successive space marks the begining of a new argument.
 
- - Parsing the parameters
+If an argument needs to have parameters (for instance, if it is a string or an array), encapsulate the arguments between " or '.
+
+Examples:
+- CommandName --> The command "CommandName" is executed without arguments.
+- CommandName 2 3 --> The command is executed with two arguments: "2" & "3".
+- CommandName 2 "parameter with spaces" "another parameter with spaces" --> Three arguments, two of which contain spaces.
+
+#### The Parser Attribute
+A match is only guaranteed when every input argument suceeds at the conversion to the command's argument type.
+
+In order for an input argument to be parsed into its destination type, a Parser Attribute is needed for that type. 
+If there is none, the conversion fails and an exception is thrown, as a Parser is to be expected for every argument type inside a command. If there are more than one Parser for the same type, an exception is also thrown. Note that there are already built-in parsers for most common types.
+
+### (Optional) Create custom Parsers
+The Unity assembly has a [great example](CommandSystem-Unity/Parsers.cs) on how to create new Parsers.
+
+### (Optional) Create custom CommandTypes
