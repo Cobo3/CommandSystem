@@ -23,8 +23,12 @@ using SickDev.CommandSystem;
 
 static void Main(string[] args){
     CommandsManager manager = new CommandsManager();
+    Config.RegisterAssembly("Your assembly name");
 }
 ```
+
+#### Registering Assemblies
+CommandSystem needs to know where to look for commands and parsers. Assemblies containing such elements need to be registered using "Config.RegisterAssembly"
 
 ### Create and add Commands
 Commands can be created in three differet ways.
@@ -49,6 +53,7 @@ using SickDev.CommandSystem;
 
 static void Main(string[] args){
     CommandsManager manager = new CommandsManager();
+    Config.RegisterAssembly("Your assembly name");
     
     Command actionCommand = new ActionCommand<int>(ExampleActionCommand);
     Command funcCommand = new FuncCommand<int, string, bool>(ExampleFuncCommand);
@@ -79,7 +84,7 @@ using SickDev.CommandSystem;
 
 static void Main(string[] args){
     CommandsManager manager = new CommandsManager();
-    Config.AddAssemblyWithCommands("Your assembly name");
+    Config.RegisterAssembly("Your assembly name");
     manager.Load();
 }
 
@@ -103,6 +108,8 @@ using SickDev.CommandSystem;
 
 static void Main(string[] args){
     CommandsManager manager = new CommandsManager();
+    Config.RegisterAssembly("Your assembly name");
+    
     Command funcCommand = new FuncCommand<int, string, bool>(ExampleFuncCommand);    
     manager.Add(funcCommand);
     
@@ -140,6 +147,8 @@ In order for an input argument to be parsed into its destination type, a Parser 
 If there is none, the conversion fails and an exception is thrown, as a Parser is to be expected for every argument type inside a command. If there are more than one Parser for the same type, an exception is also thrown. Note that there are already built-in parsers for most common types.
 
 ### (Optional) Create custom Parsers
-The Unity assembly has a [great example](CommandSystem-Unity/Parsers.cs) on how to create new Parsers.
+If you need to call a method with unsupported argument types, you need to make a Parser method for those types. The Unity assembly has a [great example](CommandSystem-Unity/Parsers.cs) on how to create new Parsers.
+
+These parsers need to be included
 
 ### (Optional) Create custom CommandTypes
