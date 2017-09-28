@@ -95,7 +95,7 @@ namespace SickDev.CommandSystem {
         }
 
         public override string Message {
-            get {return "No command found with name or alias '" + command.command + "'";}
+            get {return "No command found with name '" + command.command + "'";}
         }
     }
 

@@ -57,7 +57,7 @@ namespace SickDev.CommandSystem {
         static Assembly[] GetAssembliesWithCommands() {
             List<Assembly> assemblies = new List<Assembly>();
             Assembly[] loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
-            string[] assembliesWithCommands = Config.assembliesWithCommands;
+            string[] assembliesWithCommands = Config.registeredAssemblies;
 
             for(int i = 0; i < assembliesWithCommands.Length; i++) {
                 bool loaded = false;

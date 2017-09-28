@@ -5,7 +5,7 @@ namespace Test {
     class Program {
         static void Main(string[] args) {
             CommandsManager.onMessage += Console.WriteLine;
-            Config.AddAssemblyWithCommands("Test");
+            Config.RegisterAssembly("Test");
 
             CommandsManager manager = new CommandsManager();
             manager.Load();

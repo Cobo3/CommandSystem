@@ -16,7 +16,7 @@ namespace SickDev.CommandSystem {
         }
 
         void GetCommand() {
-            string[] parts = raw.Split(' ');
+            string[] parts = raw.Split(separator);
             command = parts[0];
         }
         

@@ -2,16 +2,20 @@
 
 namespace SickDev.CommandSystem{
     public static class Config{
-        static List<string> _assembliesWithCommands = new List<string> {
+        static List<string> _registeredAssemblies = new List<string> {
            "CommandSystem",
         };
 
-        internal static string[] assembliesWithCommands{
-            get { return _assembliesWithCommands.ToArray(); }
+        internal static string[] registeredAssemblies{
+            get { return _registeredAssemblies.ToArray(); }
         }
 
-        public static void AddAssemblyWithCommands(string assembly) {
-            _assembliesWithCommands.Add(assembly);
+        public static void RegisterAssembly(string assembly) {
+            _registeredAssemblies.Add(assembly);
+        }
+
+        public static void UnregisterAssembly(string assembly) {
+            _registeredAssemblies.Remove(assembly);
         }
     }
 }
