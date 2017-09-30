@@ -94,6 +94,8 @@ static void ExampleCommandAttribute(){
 }
 ```
 
+Assemblies containing methods with the Command attribute need to be registered first.
+
 #### Using the Commands Builder
 Using the CommandsBuilder is the perfect solution when you need to mass generate commands. It uses reflection to get members from a Type and converting them into commands. The downside is that it only work with instance members.
 
@@ -149,6 +151,11 @@ If there is none, the conversion fails and an exception is thrown, as a Parser i
 ### (Optional) Create custom Parsers
 If you need to call a method with unsupported argument types, you need to make a Parser method for those types. The Unity assembly has a [great example](CommandSystem-Unity/Parsers.cs) on how to create new Parsers.
 
-These parsers need to be included
+Assemblies containing parser methods need to be registered first.
 
 ### (Optional) Create custom CommandTypes
+A command type is any class which derived from Command. Usually, you wouldn't need to create such classes, as the default command types defined in [CommandTypes.cs](CommandSystem/Source/CommandTypes.cs) should suffice. 
+
+Command types are already used to find the most suitable conversion for commands created using the CommandAttribute mnethod.
+
+Assemblies containing custom command types need to be resgistered first.
