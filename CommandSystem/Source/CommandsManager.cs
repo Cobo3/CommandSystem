@@ -39,9 +39,24 @@ namespace SickDev.CommandSystem {
         }
 
         public void Remove(Command command) {
-            if(commands.RemoveAll(x => x.Equals(command)) > 0) {
-                if(onCommandRemoved != null)
-                    onCommandRemoved(command);
+            RemoveInternal(x => command.Equals(x));
+        }
+
+        public void RemoveOverloads(Command[] commands) {
+            for(int i = 0; i < commands.Length; i++)
+                RemoveOverloads(commands[i]);
+        }
+
+        public void RemoveOverloads(Command command) {
+            RemoveInternal(x => command.IsOverloadOf(x));
+        }
+
+        void RemoveInternal(Predicate<Command> predicate) {
+            for(int i = commands.Count - 1; i >= 0; i--) {
+                if(predicate(commands[i])) { 
+                    if(onCommandRemoved != null)
+                        onCommandRemoved(commands[i]);
+                }
             }
         }
 

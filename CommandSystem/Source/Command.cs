@@ -55,6 +55,10 @@ namespace SickDev.CommandSystem {
             return string.Equals(name, parsedCommand.command, StringComparison.OrdinalIgnoreCase);
         }
 
+        public bool IsOverloadOf(Command command) {
+            return string.Equals(name, command.name);
+        }
+
         public object Execute(object[] args) {
             return deleg.DynamicInvoke(args);
         }
