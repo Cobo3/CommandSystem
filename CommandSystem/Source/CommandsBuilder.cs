@@ -10,16 +10,13 @@ namespace SickDev.CommandSystem {
         Type type;
         List<Command> commands = new List<Command>();
 
+        public Command[] lastBuiltCommands { get { return commands.ToArray(); } }
+
         public PropertyBuilderSettings fieldsSettings { get; set; }
         public PropertyBuilderSettings propertiesSettings { get; set; }
         public MemberBuilderSettings methodsSettings { get; set; }
-        public bool addClassName { get; set; }
-        public Command[] lastBuiltCommands { get { return commands.ToArray(); } }
-
-        public string groupPrefix {
-            get { return addClassName ? type.Name + "." : string.IsNullOrEmpty(_groupPrefix)?string.Empty:_groupPrefix+"."; }
-            set { _groupPrefix = value; }
-        }
+        public bool useClassName { get; set; }
+        public string className { get; set; }
 
         public CommandsBuilder(Type type) {
             this.type = type;
@@ -80,7 +77,10 @@ namespace SickDev.CommandSystem {
 
         void ProcessFieldLamdaExpression(FieldInfo field, LambdaExpression expression) {
             Delegate deleg = expression.Compile();
-            Command command = new Command(deleg, GetComposedName(field));
+            Command command = new Command(deleg) {
+                className = className,
+                useClassName = useClassName
+            };
             commands.Add(command);
         }
 
@@ -98,7 +98,10 @@ namespace SickDev.CommandSystem {
             try {
                 if(method.IsPublic && propertiesSettings.accesModiferBindings.HasFlag(AccesModifierBindings.Public) ||
                     !method.IsPublic && propertiesSettings.accesModiferBindings.HasFlag(AccesModifierBindings.NonPublic)) {
-                    commands.Add(new MethodInfoCommand(method, GetComposedName(property)));
+                    commands.Add(new MethodInfoCommand(method) {
+                        className = className,
+                        useClassName = useClassName
+                    });
                 }
             }
             catch(Exception e) {
@@ -112,7 +115,10 @@ namespace SickDev.CommandSystem {
                 if(methods[i].IsSpecialName)
                     continue;
                 try {
-                    commands.Add(new MethodInfoCommand(methods[i], GetComposedName(methods[i])));
+                    commands.Add(new MethodInfoCommand(methods[i]) {
+                        className = className,
+                        useClassName = useClassName
+                    });
                 }
                 catch(Exception e) {
                     CommandsManager.SendException(new CommandBuildingException(type, methods[i], e));
@@ -153,10 +159,6 @@ namespace SickDev.CommandSystem {
                 flags |= BindingFlags.Static;
 
             return flags;
-        }
-
-        string GetComposedName(MemberInfo member) {
-            return groupPrefix + member.Name;
         }
 
         public class MemberBuilderSettings {

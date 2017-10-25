@@ -17,7 +17,12 @@ namespace SickDev.CommandSystem {
         public Command ExtractCommand() {
             if (!isDeclarationSupported)
                 throw new UnsupportedCommandDeclarationException(method);
-            return (Command)Activator.CreateInstance(typeof(MethodInfoCommand), method, attribute.alias, attribute.description);
+            Command command = (Command)Activator.CreateInstance(typeof(MethodInfoCommand), method);
+            command.alias = attribute.alias;
+            command.description = attribute.description;
+            command.className = attribute.className;
+            command.useClassName = attribute.useClassName;
+            return command;
         }
     }
 }
