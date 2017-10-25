@@ -62,12 +62,12 @@ namespace SickDev.CommandSystem {
             return new CommandExecuter(commands, parsedCommand);            
         }
 
-        internal static void SendException(Exception exception) {
+        public static void SendException(Exception exception) {
             if (onExceptionThrown != null)
                 onExceptionThrown(exception);
         }
 
-        internal static void SendMessage(string message) {
+        public static void SendMessage(string message) {
             if (onMessage != null)
                 onMessage(message);
         }
