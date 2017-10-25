@@ -58,14 +58,14 @@ namespace SickDev.CommandSystem.Unity {
 
             UnityEngine.Apple.ReplayKit.ReplayKit.BroadcastStatusCallback broadcastCallback = (hasStarted, errorMessage) => {
                 if(hasStarted)
-                    DevConsole.singleton.Log("Broadcast started successfully");
+                    CommandsManager.SendMessage("Broadcast started successfully");
                 else
-                    DevConsole.singleton.Log("Broadcast couldn't get started. Error: "+errorMessage);
+                    CommandsManager.SendMessage("Broadcast couldn't get started. Error: "+errorMessage);
             };
             Action<bool, bool> broadcastMethod = (enableMicrophone, enableCamera) => {
                 UnityEngine.Apple.ReplayKit.ReplayKit.StartBroadcasting(broadcastCallback, enableMicrophone, enableCamera);
             };
-            manager.Add(new ActionCommand<bool, bool>(broadcastMethod, type.Name+".StartBroadcasting"));
+            manager.Add(new ActionCommand<bool, bool>(broadcastMethod) { useClassName = true, alias = "StartBroadcasting" });
 #endif
         }
 
