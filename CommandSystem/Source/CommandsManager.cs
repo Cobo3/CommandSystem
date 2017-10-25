@@ -51,6 +51,14 @@ namespace SickDev.CommandSystem {
             RemoveInternal(x => command.IsOverloadOf(x));
         }
 
+        public bool IsCommandAdded(Command command) {
+            return commands.Any(x => command.Equals(x));
+        }
+
+        public bool IsCommandOverloadAdded(Command command) {
+            return commands.Any(x => command.IsOverloadOf(x));
+        }
+
         void RemoveInternal(Predicate<Command> predicate) {
             for(int i = commands.Count - 1; i >= 0; i--) {
                 if(predicate(commands[i])) { 
