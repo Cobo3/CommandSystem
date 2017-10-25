@@ -61,7 +61,8 @@ namespace SickDev.CommandSystem {
 
         void RemoveInternal(Predicate<Command> predicate) {
             for(int i = commands.Count - 1; i >= 0; i--) {
-                if(predicate(commands[i])) { 
+                if(predicate(commands[i])) {
+                    commands.RemoveAt(i);
                     if(onCommandRemoved != null)
                         onCommandRemoved(commands[i]);
                 }

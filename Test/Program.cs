@@ -9,7 +9,10 @@ namespace Test {
 
             CommandsManager manager = new CommandsManager();
             manager.Load();
-            manager.Add(new FuncCommand<int, string, bool>(new Program().ExampleFuncCommand));
+            Command command = new FuncCommand<int, string, bool>(new Program().ExampleFuncCommand);
+            manager.Add(command);
+            Console.WriteLine(manager.Execute("ExampleFuncCommand 2 3"));
+            manager.Remove(command);
             Console.WriteLine(manager.Execute("ExampleFuncCommand 2 3"));
         }
 
