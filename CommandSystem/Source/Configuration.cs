@@ -16,7 +16,7 @@ namespace SickDev.CommandSystem{
         }
 
         public void RegisterAssembly(string assembly) {
-            if (_registeredAssemblies.Contains(assembly))
+            if (!_registeredAssemblies.Contains(assembly))
                 _registeredAssemblies.Add(assembly);
         }
     }

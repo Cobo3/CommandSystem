@@ -772,6 +772,7 @@ namespace SickDev.CommandSystem.Unity {
                 UnityEngine.XR.InputTracking
 #else
                 UnityEngine.VR.InputTracking
+#endif
             );
             CommandsBuilder builder = new CommandsBuilder(type);
             builder.useClassName = true;
@@ -784,6 +785,7 @@ namespace SickDev.CommandSystem.Unity {
                 UnityEngine.XR.VRDevice
 #else
                 UnityEngine.VR.VRDevice
+#endif
             );
             CommandsBuilder builder = new CommandsBuilder(type);
             builder.useClassName = true;
@@ -796,6 +798,7 @@ namespace SickDev.CommandSystem.Unity {
                 UnityEngine.XR.VRSettings
 #else
                 UnityEngine.VR.VRSettings
+#endif
             );
             CommandsBuilder builder = new CommandsBuilder(type);
             builder.useClassName = true;
