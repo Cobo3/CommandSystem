@@ -8,13 +8,9 @@ namespace SickDev.CommandSystem {
             string text = string.Empty;
             Type[] types = ReflectionFinder.GetAllEnums();
             List<Type> matches = new List<Type>();
-            for(int i = 0; i < types.Length; i++) {
-                if(!types[i].IsEnum)
-                    continue;
-
+            for(int i = 0; i < types.Length; i++)
                 if(types[i].Name.Equals(enumName, StringComparison.OrdinalIgnoreCase))
                     matches.Add(types[i]);
-            }
 
             for(int i = 0; i < matches.Count; i++) {
                 string[] values = Enum.GetNames(matches[i]);
