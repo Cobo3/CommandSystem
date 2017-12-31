@@ -4,7 +4,10 @@ using System.Reflection;
 using System.Collections.Generic;
 
 namespace SickDev.CommandSystem {
-    internal static class ReflectionFinder {
+    internal class ReflectionFinder {
+        Configuration configuration;
+        Type[] userTypes;
+
         static Type[] _allTypes;
         static Type[] allTypes {
             get {
@@ -14,13 +17,9 @@ namespace SickDev.CommandSystem {
             }
         }
 
-        static Type[] _userTypes;
-        static Type[] userTypes {
-            get {
-                if(_userTypes == null)
-                    _userTypes = LoadUserTypes().ToArray();
-                return _userTypes;
-            }
+        public ReflectionFinder(Configuration configuration) {
+            this.configuration = configuration;
+            userTypes = LoadUserTypes().ToArray();
         }
 
         static List<Type> LoadAllTypes() {
@@ -31,7 +30,7 @@ namespace SickDev.CommandSystem {
             return types;
         }
 
-        static List<Type> LoadUserTypes() {
+        List<Type> LoadUserTypes() {
             List<Type> types = new List<Type>();
             Assembly[] assemblies = GetAssembliesWithCommands();
             CommandsManager.SendMessage("Loading CommandSystem data from: " +
@@ -46,18 +45,18 @@ namespace SickDev.CommandSystem {
             return types;
         }
         
-        public static Type[] LoadClassesAndStructs() {
+        public Type[] GetUserClassesAndStructs() {
             return userTypes.Where(x => x.IsClass || x.IsValueType && !x.IsEnum).ToArray();
         }
 
-        public static Type[] LoadEnums() {
+        public static Type[] GetAllEnums() {
             return allTypes.Where(x => x.IsEnum).ToArray();
         }
 
-        static Assembly[] GetAssembliesWithCommands() {
+        Assembly[] GetAssembliesWithCommands() {
             List<Assembly> assemblies = new List<Assembly>();
             Assembly[] loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
-            string[] assembliesWithCommands = Config.registeredAssemblies;
+            string[] assembliesWithCommands = configuration.registeredAssemblies;
 
             for(int i = 0; i < assembliesWithCommands.Length; i++) {
                 bool loaded = false;

@@ -6,7 +6,7 @@ namespace SickDev.CommandSystem {
         [Command]
         static string GetEnumValues(string enumName) {
             string text = string.Empty;
-            Type[] types = ReflectionFinder.LoadEnums();
+            Type[] types = ReflectionFinder.GetAllEnums();
             List<Type> matches = new List<Type>();
             for(int i = 0; i < types.Length; i++) {
                 if(!types[i].IsEnum)

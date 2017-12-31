@@ -12,11 +12,11 @@ namespace SickDev.CommandSystem {
         public bool canBeExecuted { get { return matches.Count == 1; } }
         public bool hasReturnValue { get { return canBeExecuted && matches[0].command.hasReturnValue; } }
 
-        internal CommandExecuter(List<Command> commands, ParsedCommand parsedCommand) {
+        internal CommandExecuter(List<Command> commands, ParsedCommand parsedCommand, ArgumentsParser parser) {
             this.commands = commands;
             this.parsedCommand = parsedCommand;
             FilterOverloads();
-            FilterMatches();
+            FilterMatches(parser);
         }
 
         void FilterOverloads() {
@@ -25,11 +25,11 @@ namespace SickDev.CommandSystem {
                     overloads.Add(commands[i]);
         }
 
-        void FilterMatches() {
+        void FilterMatches(ArgumentsParser parser) {
             for (int i = 0; i < overloads.Count; i++) { 
                 try {
                     if (overloads[i].signature.Matches(parsedCommand.args)) {
-                        object[] arguments = overloads[i].signature.Convert(parsedCommand.args);
+                        object[] arguments = overloads[i].signature.Convert(parsedCommand.args, parser);
                         matches.Add(new Match(overloads[i], arguments));
                     }
                 }

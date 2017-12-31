@@ -18,15 +18,6 @@ namespace SickDev.CommandSystem {
             }
         }
 
-        static ArgumentsParser _parser;
-        static ArgumentsParser parser {
-            get {
-                if (_parser == null)
-                    _parser = new ArgumentsParser();
-                return _parser;
-            }
-        }
-
         internal Signature(Command command) {
             this.command = command;
             List<ParameterInfo> parameters = new List<ParameterInfo>(command.method.GetParameters());
@@ -38,7 +29,7 @@ namespace SickDev.CommandSystem {
             return args.Length >= parameters.Count(x => !x.IsOptional) && args.Length <= parameters.Length;
         }
 
-        internal object[] Convert(string[] args) {
+        internal object[] Convert(string[] args, ArgumentsParser parser) {
             object[] oArgs = new object[parameters.Length];
             for (int i = 0; i < oArgs.Length; i++) {
                 if (args.Length > i)

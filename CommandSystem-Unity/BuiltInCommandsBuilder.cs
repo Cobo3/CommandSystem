@@ -224,7 +224,7 @@ namespace SickDev.CommandSystem.Unity {
             builder.methodsSettings.AddExceptions("Assert", "AssertFormat", "DrawLine", "DrawRay");
             builder.propertiesSettings.AddExceptions("logger");
             manager.Add(builder.Build());
-#if UNITY_5_3_OR_NEWER            
+#if UNITY_5_3_OR_NEWER
             manager.Add(new ActionCommand<LogType>(value => UnityEngine.Debug.unityLogger.filterLogType = value) { alias = "filterLogType", useClassName = true });
             manager.Add(new ActionCommand<bool>(value => UnityEngine.Debug.unityLogger.logEnabled = value) { alias = "logEnabled", useClassName = true });
             manager.Add(new FuncCommand<LogType>(() => UnityEngine.Debug.unityLogger.filterLogType) { alias = "filterLogType", useClassName = true });
@@ -248,7 +248,7 @@ namespace SickDev.CommandSystem.Unity {
             builder.fieldsSettings.accesModiferBindings = CommandsBuilder.AccesModifierBindings.None;
             builder.propertiesSettings.accesModiferBindings = CommandsBuilder.AccesModifierBindings.None;
             manager.Add(builder.Build());
-            manager.Add(new FuncCommand<int>(() => UnityEngine.Display.displays.Length) { alias = "displayCount", useClassName = true });
+            manager.Add(new FuncCommand<int>(() => UnityEngine.Display.displays.Length) { alias = "displayCount", className = type.Name });
 #if UNITY_5_6_OR_NEWER
             manager.Add(new FuncCommand<int, string>(index => {
                 Display display = UnityEngine.Display.displays[index];
@@ -260,7 +260,7 @@ namespace SickDev.CommandSystem.Unity {
                 Display display = UnityEngine.Display.displays[index];
                 return string.Format("RenderResolution: {0}x{1}\tSystemResolution: {2}x{3}",
                     display.renderingWidth, display.renderingHeight, display.systemWidth, display.systemHeight);
-            }) { alias = "GetDisplayInfo", useClassName = true });
+            }) { alias = "GetDisplayInfo", className = type.Name });
 #endif
         }
 
@@ -286,11 +286,11 @@ namespace SickDev.CommandSystem.Unity {
             builder.useClassName = true;
             builder.methodsSettings.AddExceptions("Find");
             manager.Add(builder.Build());
-            manager.Add(new ActionCommand<GameObject>(gameObject => UnityEngine.Object.DontDestroyOnLoad(gameObject)) { alias = "DontDestroyOnLoad", useClassName = true });
-            manager.Add(new ActionCommand<GameObject>(gameObject => UnityEngine.Object.Instantiate(gameObject)) { alias = "Instantiate", useClassName = true });
-            manager.Add(new ActionCommand<GameObject, string>((gameObject, methodName) => gameObject.SendMessage(methodName)) { alias = "SendMessage", useClassName = true });
-            manager.Add(new ActionCommand<GameObject, bool>((gameObject, value) => gameObject.SetActive(value)) { alias = "SetActive", useClassName = true });
-            manager.Add(new FuncCommand<GameObject, bool>(gameObject => gameObject.activeSelf) { alias = "GetActive", useClassName = true });
+            manager.Add(new ActionCommand<GameObject>(gameObject => UnityEngine.Object.DontDestroyOnLoad(gameObject)) { alias = "DontDestroyOnLoad", className = type.Name });
+            manager.Add(new ActionCommand<GameObject>(gameObject => UnityEngine.Object.Instantiate(gameObject)) { alias = "Instantiate", className = type.Name });
+            manager.Add(new ActionCommand<GameObject, string>((gameObject, methodName) => gameObject.SendMessage(methodName)) { alias = "SendMessage", className = type.Name });
+            manager.Add(new ActionCommand<GameObject, bool>((gameObject, value) => gameObject.SetActive(value)) { alias = "SetActive", className = type.Name });
+            manager.Add(new FuncCommand<GameObject, bool>(gameObject => gameObject.activeSelf) { alias = "GetActive", className = type.Name });
         }
 
         protected void Handheld() {
@@ -546,9 +546,9 @@ namespace SickDev.CommandSystem.Unity {
             CommandsBuilder builder = new CommandsBuilder(type);
             builder.useClassName = true;
             manager.Add(builder.Build());
-            manager.Add(new ActionCommand<string, bool>((key, value) => UnityEngine.PlayerPrefs.SetInt(key, value ? 1 : 0)){ alias = "SetBool", useClassName = true });
-            manager.Add(new FuncCommand<string, bool>(key => UnityEngine.PlayerPrefs.GetInt(key) != 0) { alias = "SetBool", useClassName = true });
-            manager.Add(new FuncCommand<string, bool, bool>((key, defaultValue) => UnityEngine.PlayerPrefs.GetInt(key, defaultValue ? 1 : 0) != 0) { alias = "SetBool", useClassName = true });
+            manager.Add(new ActionCommand<string, bool>((key, value) => UnityEngine.PlayerPrefs.SetInt(key, value ? 1 : 0)){ alias = "SetBool", className = type.Name });
+            manager.Add(new FuncCommand<string, bool>(key => UnityEngine.PlayerPrefs.GetInt(key) != 0) { alias = "SetBool", className = type.Name });
+            manager.Add(new FuncCommand<string, bool, bool>((key, defaultValue) => UnityEngine.PlayerPrefs.GetInt(key, defaultValue ? 1 : 0) != 0) { alias = "SetBool", className = type.Name });
         }
 
         protected void ProceduralMaterial() {
@@ -640,17 +640,19 @@ namespace SickDev.CommandSystem.Unity {
             builder.propertiesSettings.AddExceptions("ambientProbe", "customReflection", "skybox", "sun");
             builder.methodsSettings.AddExceptions("GetCustomShader", "SetCustomShader");
             manager.Add(builder.Build());
-            manager.Add(new FuncCommand<Material>(() => UnityEngine.RenderSettings.skybox) { alias = "skybox", useClassName = true });
+            manager.Add(new FuncCommand<Material>(() => UnityEngine.RenderSettings.skybox) { alias = "skybox", className = type.Name });
 #if UNITY_5_5_OR_NEWER
-            manager.Add(new FuncCommand<Light>(() => UnityEngine.RenderSettings.sun) { alias = "sun", useClassName = true });
+            manager.Add(new FuncCommand<Light>(() => UnityEngine.RenderSettings.sun) { alias = "sun", className = type.Name });
 #endif
         }
 
         protected void SamsungTV() {
+#if !UNITY_2017_3_OR_NEWER
             Type type = typeof(SamsungTV);
             CommandsBuilder builder = new CommandsBuilder(type);
             builder.useClassName = true;
             manager.Add(builder.Build());
+#endif
         }
 
         protected void SceneManager() {
@@ -765,21 +767,36 @@ namespace SickDev.CommandSystem.Unity {
         }
 
         protected void VRInputTracking() {
-            Type type = typeof(UnityEngine.VR.InputTracking);
+            Type type = typeof(
+#if UNITY_2017_2_OR_NEWER
+                UnityEngine.XR.InputTracking
+#else
+                UnityEngine.VR.InputTracking
+            );
             CommandsBuilder builder = new CommandsBuilder(type);
             builder.useClassName = true;
             manager.Add(builder.Build());
         }
 
         protected void VRDevice() {
-            Type type = typeof(UnityEngine.VR.VRDevice);
+            Type type = typeof(
+#if UNITY_2017_2_OR_NEWER
+                UnityEngine.XR.VRDevice
+#else
+                UnityEngine.VR.VRDevice
+            );
             CommandsBuilder builder = new CommandsBuilder(type);
             builder.useClassName = true;
             manager.Add(builder.Build());
         }
 
         protected void VRSettings() {
-            Type type = typeof(UnityEngine.VR.VRSettings);
+            Type type = typeof(
+#if UNITY_2017_2_OR_NEWER
+                UnityEngine.XR.VRSettings
+#else
+                UnityEngine.VR.VRSettings
+            );
             CommandsBuilder builder = new CommandsBuilder(type);
             builder.useClassName = true;
             manager.Add(builder.Build());

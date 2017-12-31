@@ -9,14 +9,23 @@ namespace SickDev.CommandSystem {
         public delegate void OnCommandModified(Command command);
 
         List<Command> commands = new List<Command>();
+        readonly Configuration configuration;
+        readonly ReflectionFinder finder;
+        readonly ArgumentsParser parser;
 
         public event OnCommandModified onCommandAdded;
         public event OnCommandModified onCommandRemoved;
         public static event OnExceptionThrown onExceptionThrown;
         public static event OnMessage onMessage;
 
+        public CommandsManager(Configuration configuration) {
+            this.configuration = configuration;
+            finder = new ReflectionFinder(configuration);
+            parser = new ArgumentsParser(finder);
+        }
+
         public void Load() {
-            CommandAttributeLoader loader = new CommandAttributeLoader();
+            CommandAttributeLoader loader = new CommandAttributeLoader(finder);
             Add(loader.LoadCommands());
         }
 
@@ -83,7 +92,7 @@ namespace SickDev.CommandSystem {
         }
 
         public CommandExecuter GetCommandExecuter(ParsedCommand parsedCommand) {
-            return new CommandExecuter(commands, parsedCommand);            
+            return new CommandExecuter(commands, parsedCommand, parser);            
         }
 
         public static void SendException(Exception exception) {

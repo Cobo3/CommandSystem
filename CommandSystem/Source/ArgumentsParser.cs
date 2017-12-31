@@ -6,15 +6,17 @@ namespace SickDev.CommandSystem {
     internal class ArgumentsParser {
         //Dictionary for linking a given type with its respective Parser method
         Dictionary<Type, MethodInfo> parsers;
+        ReflectionFinder finder;
 
-        public ArgumentsParser() {
+        public ArgumentsParser(ReflectionFinder finder) {
+            this.finder = finder;
             Load();
         }
 
         //Finds every Parser method and adds it to the array
         void Load() {
             parsers = new Dictionary<Type, MethodInfo>();
-            Type[] allTypes = ReflectionFinder.LoadClassesAndStructs();
+            Type[] allTypes = finder.GetUserClassesAndStructs();
             for (int i = 0; i < allTypes.Length; i++) { 
                 MethodInfo[] methods = allTypes[i].GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
                 for (int j = 0; j < methods.Length; j++) { 

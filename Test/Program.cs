@@ -5,9 +5,8 @@ namespace Test {
     class Program {
         static void Main(string[] args) {
             CommandsManager.onMessage += Console.WriteLine;
-            Config.RegisterAssembly("Test");
 
-            CommandsManager manager = new CommandsManager();
+            CommandsManager manager = new CommandsManager(new Configuration("Test"));
             manager.Load();
             Command command = new FuncCommand<int, string, bool>(new Program().ExampleFuncCommand);
             manager.Add(command);

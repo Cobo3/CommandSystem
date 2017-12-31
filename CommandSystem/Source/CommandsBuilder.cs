@@ -6,7 +6,6 @@ using System.Collections.Generic;
 
 namespace SickDev.CommandSystem {
     public class CommandsBuilder {
-        string _groupPrefix;
         Type type;
         List<Command> commands = new List<Command>();
 
