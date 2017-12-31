@@ -1,83 +1,42 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace SickDev.CommandSystem.Unity {
     static class Parsers {
         [Parser(typeof(Vector2))]
         static Vector2 ParseVector2(string value) {
-            string[] array = value.Split(' ');
-            if(array.Length != 2)
-                throw new InvalidArgumentFormatException<Vector2>(value);
-            float[] values = new float[array.Length];
-            for(int i = 0; i < array.Length; i++) {
-                if(!float.TryParse(array[i].Trim(), out values[i]))
-                    throw new InvalidArgumentFormatException<Vector2>(value);
-            }
+            float[] values = GenericParser<float, Vector2>(value, 2, 2);
             return new Vector2(values[0], values[1]);
         }
 
         [Parser(typeof(Vector3))]
         static Vector3 ParseVector3(string value) {
-            string[] array = value.Split(' ');
-            if(array.Length < 2 || array.Length > 3)
-                throw new InvalidArgumentFormatException<Vector3>(value);
-            float[] values = new float[array.Length];
-            for(int i = 0; i < array.Length; i++) {
-                if(!float.TryParse(array[i].Trim(), out values[i]))
-                    throw new InvalidArgumentFormatException<Vector3>(value);
-            }
-            return new Vector3(values[0], values[1], array.Length > 2 ? values[2] : 0);
+            float[] values = GenericParser<float, Vector3>(value, 2, 3);
+            return new Vector3(values[0], values[1], values.Length > 2 ? values[2] : 0);
         }
 
         [Parser(typeof(Vector4))]
         static Vector4 ParseVector4(string value) {
-            string[] array = value.Split(' ');
-            if(array.Length < 2 || array.Length > 4)
-                throw new InvalidArgumentFormatException<Vector4>(value);
-            float[] values = new float[array.Length];
-            for(int i = 0; i < array.Length; i++) {
-                if(!float.TryParse(array[i].Trim(), out values[i]))
-                    throw new InvalidArgumentFormatException<Vector4>(value);
-            }
-            return new Vector4(values[0], values[1], array.Length > 2 ? values[2] : 0, array.Length > 3 ? values[3] : 0);
+            float[] values = GenericParser<float, Vector4>(value, 2, 4);
+            return new Vector4(values[0], values[1], values.Length > 2 ? values[2] : 0, values.Length > 3 ? values[3] : 0);
         }
 
         [Parser(typeof(Quaternion))]
         static Quaternion ParseQuaternion(string value) {
-            string[] array = value.Split(' ');
-            if(array.Length != 4)
-                throw new InvalidArgumentFormatException<Quaternion>(value);
-            float[] values = new float[array.Length];
-            for(int i = 0; i < array.Length; i++) {
-                if(!float.TryParse(array[i].Trim(), out values[i]))
-                    throw new InvalidArgumentFormatException<Quaternion>(value);
-            }
+            float[] values = GenericParser<float, Quaternion>(value, 4, 4);
             return new Quaternion(values[0], values[1], values[2], values[3]);
         }
 
         [Parser(typeof(Color))]
         static Color ParseColor(string value) {
-            string[] array = value.Split(' ');
-            if(array.Length < 3 || array.Length > 4)
-                throw new InvalidArgumentFormatException<Color>(value);
-            float[] values = new float[array.Length];
-            for(int i = 0; i < array.Length; i++) {
-                if(!float.TryParse(array[i].Trim(), out values[i]))
-                    throw new InvalidArgumentFormatException<Color>(value);
-            }
-            return new Color(values[0], values[1], values[2], array.Length > 3 ? values[3] : 1);
+            float[] values = GenericParser<float, Color>(value, 3, 4);
+            return new Color(values[0], values[1], values[2], values.Length > 3 ? values[3] : 1);
         }
 
         [Parser(typeof(Color32))]
         static Color ParseColor32(string value) {
-            string[] array = value.Split(' ');
-            if(array.Length < 3 || array.Length > 4)
-                throw new InvalidArgumentFormatException<Color32>(value);
-            byte[] values = new byte[array.Length];
-            for(int i = 0; i < array.Length; i++) {
-                if(!byte.TryParse(array[i].Trim(), out values[i]))
-                    throw new InvalidArgumentFormatException<Color32>(value);
-            }
-            return new Color32(values[0], values[1], values[2], array.Length > 3 ? values[3] : (byte)255);
+            byte[] values = GenericParser<byte, Color32>(value, 3, 4);
+            return new Color32(values[0], values[1], values[2], values.Length > 3 ? values[3] : (byte)255);
         }
 
         [Parser(typeof(Hash128))]
@@ -94,14 +53,7 @@ namespace SickDev.CommandSystem.Unity {
 
         [Parser(typeof(Rect))]
         static Rect ParseRect(string value) {
-            string[] array = value.Split(' ');
-            if(array.Length != 4)
-                throw new InvalidArgumentFormatException<Rect>(value);
-            float[] values = new float[array.Length];
-            for(int i = 0; i < array.Length; i++) {
-                if(!float.TryParse(array[i].Trim(), out values[i]))
-                    throw new InvalidArgumentFormatException<Rect>(value);
-            }
+            float[] values = GenericParser<float, Rect>(value, 4, 4);
             return new Rect(values[0], values[1], values[2], values[3]);
         }
 
@@ -131,6 +83,22 @@ namespace SickDev.CommandSystem.Unity {
         [Parser(typeof(Material))]
         static Material ParseMaterial(string value) {
             return Resources.Load<Material>(value);
+        }
+
+        static ArgumentType[] GenericParser<ArgumentType, ObjectType>(string value, int min, int max) where ArgumentType:IConvertible {
+            string[] array = GenericSplitter<ObjectType>(value, min, max);
+
+            ArgumentType[] values = new ArgumentType[array.Length];
+            for(int i = 0; i < array.Length; i++)
+                values[i] = (ArgumentType)Convert.ChangeType(array[i].Trim(), typeof(ObjectType));
+            return values;
+        }
+
+        static string[] GenericSplitter<T>(string value, int min, int max) {
+            string[] array = value.Split(' ');
+            if(array.Length < min || array.Length > max)
+                throw new InvalidArgumentFormatException<T>(value);
+            return array;
         }
     }
 }
