@@ -14,7 +14,7 @@ namespace Test {
             Console.WriteLine(manager.Execute("ExampleFuncCommand 2 3"));
             manager.Remove(command);
             manager.Add(new CommandsBuilder(typeof(Program)).Build());
-            Console.WriteLine(manager.Execute("Max 2 3"));
+            Console.WriteLine(manager.Execute("Max (int)2 (float)3"));
         }
 
         bool ExampleFuncCommand(int number, string stringNumber) {
@@ -34,6 +34,10 @@ namespace Test {
                 return a;
             else
                 return b;
+        }
+
+        public static int Max(bool a, bool b) {
+            return 2;
         }
     }
 }

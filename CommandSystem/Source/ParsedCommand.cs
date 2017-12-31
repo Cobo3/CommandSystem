@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SickDev.CommandSystem {
     public class ParsedCommand {
         public string raw { get; private set; }
         public string command { get; private set; }
-        public string[] args { get; private set; }
+        public ParsedArgument[] args { get; private set; }
 
         static readonly char[] groupifiers = { '\'', '\"' };
         const char separator = ' ';
@@ -55,7 +56,7 @@ namespace SickDev.CommandSystem {
 
             if (arg != string.Empty)
                 listArgs.Add(arg);
-            args = listArgs.ToArray();
+            args = listArgs.ConvertAll(x=>new ParsedArgument(x)).ToArray();
         }
     }
 }

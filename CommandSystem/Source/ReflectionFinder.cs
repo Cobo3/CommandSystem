@@ -9,13 +9,15 @@ namespace SickDev.CommandSystem {
         Type[] userTypes;
 
         static Type[] _allTypes;
-        static Type[] allTypes {
+        public static Type[] allTypes {
             get {
                 if(_allTypes == null)
                     _allTypes = LoadAllTypes().ToArray();
                 return _allTypes;
             }
         }
+
+        public static Type[] enumTypes { get { return allTypes.Where(x => x.IsEnum).ToArray(); } }
 
         public ReflectionFinder(Configuration configuration) {
             this.configuration = configuration;
@@ -47,10 +49,6 @@ namespace SickDev.CommandSystem {
         
         public Type[] GetUserClassesAndStructs() {
             return userTypes.Where(x => x.IsClass || x.IsValueType && !x.IsEnum).ToArray();
-        }
-
-        public static Type[] GetAllEnums() {
-            return allTypes.Where(x => x.IsEnum).ToArray();
         }
 
         Assembly[] GetAssembliesWithCommands() {

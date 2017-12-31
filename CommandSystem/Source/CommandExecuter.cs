@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Reflection;
+using System.Collections.Generic;
 
 namespace SickDev.CommandSystem {
     public class CommandExecuter {
@@ -26,22 +28,27 @@ namespace SickDev.CommandSystem {
         }
 
         void FilterMatches(ArgumentsParser parser) {
-            for (int i = 0; i < overloads.Count; i++) { 
+            for (int i = 0; i < overloads.Count; i++) {
                 try {
-                    if (overloads[i].signature.Matches(parsedCommand.args)) {
+                    if(overloads[i].signature.Matches(parsedCommand.args)) {
                         object[] arguments = overloads[i].signature.Convert(parsedCommand.args, parser);
                         matches.Add(new Match(overloads[i], arguments));
                     }
                 }
-                catch (CommandSystemException exception) {
-                    CommandsManager.SendException(exception);
-                }
+                catch(TargetInvocationException) { }
+                catch(CommandSystemException) { }
             }
         }
 
         public object Execute() {
-            Match match = GetMatch();
-            return match.command.Execute(match.parameters);
+            try {
+                Match match = GetMatch();
+                return match.command.Execute(match.parameters);
+            }
+            catch(Exception exception) {
+                CommandsManager.SendException(exception);
+                return null;
+            }
         }
 
         public Command[] GetOverloads() {
@@ -51,10 +58,10 @@ namespace SickDev.CommandSystem {
         public Match GetMatch() {
             if(!isValidCommand)
                 throw new CommandNotFoundException(parsedCommand);
-            if (matches.Count > 1)
-                throw new AmbiguousCommandCallException(parsedCommand.raw, matches.ConvertAll(x=>x.command).ToArray());
             if (matches.Count == 0)
-                throw new MatchNotFoundException(parsedCommand);
+                throw new MatchNotFoundException(parsedCommand, overloads.ToArray());
+            if (matches.Count > 1)
+                throw new AmbiguousCommandCallException(parsedCommand, matches.ConvertAll(x=>x.command).ToArray());
 
             return matches[0];
         }

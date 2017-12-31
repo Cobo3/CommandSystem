@@ -48,7 +48,7 @@ namespace SickDev.CommandSystem {
             ParsedCommand parsedArray = new ParsedCommand("command " + value);
             Array array = (Array)Activator.CreateInstance(type, parsedArray.args.Length);
             for(int i = 0; i < parsedArray.args.Length; i++)
-                array.SetValue(Parse(parsedArray.args[i], type.GetElementType()), i);
+                array.SetValue(Parse(parsedArray.args[i].argument, type.GetElementType()), i);
             return array;
         }
 

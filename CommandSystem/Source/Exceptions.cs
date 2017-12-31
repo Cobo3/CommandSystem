@@ -69,11 +69,11 @@ namespace SickDev.CommandSystem {
     }
 
     public class AmbiguousCommandCallException : CommandSystemException {
-        string rawCall;
+        ParsedCommand command;
         Command[] matches;
 
-        public AmbiguousCommandCallException(string rawCall, Command[] matches) {
-            this.rawCall = rawCall;
+        public AmbiguousCommandCallException(ParsedCommand command, Command[] matches) {
+            this.command = command;
             this.matches = matches;
         }
 
@@ -85,7 +85,7 @@ namespace SickDev.CommandSystem {
                     if(i < matches.Length - 1)
                         builder.AppendLine();
                 }
-                return "The command call \"" + rawCall + "\" is ambiguous between the following commands:\n"+builder.ToString();
+                return string.Format("The command call \'{0}' is ambiguous between the following commands:\n{1}", command.raw, builder.ToString());
             }
         }
     }
@@ -104,13 +104,23 @@ namespace SickDev.CommandSystem {
 
     public class MatchNotFoundException : CommandSystemException {
         ParsedCommand command;
+        Command[] overloads;
 
-        public MatchNotFoundException(ParsedCommand command) {
+        public MatchNotFoundException(ParsedCommand command, Command[] overloads) {
             this.command = command;
+            this.overloads = overloads;
         }
 
         public override string Message {
-            get {return "No match found for command " + command.raw;}
+            get {
+                StringBuilder builder = new StringBuilder();
+                for(int i = 0; i < overloads.Length; i++) {
+                    builder.Append(string.Format("{0}", overloads[i].signature.raw));
+                    if(i < overloads.Length - 1)
+                        builder.AppendLine();
+                }
+                return string.Format("No match found between command '{0}' and any of its overloads:\n{1}", command.raw, builder.ToString());
+            }
         }
     }
 

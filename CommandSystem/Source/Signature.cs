@@ -25,15 +25,15 @@ namespace SickDev.CommandSystem {
             this.parameters = parameters.ToArray();
         }
 
-        internal bool Matches(string[] args) {
+        internal bool Matches(ParsedArgument[] args) {
             return args.Length >= parameters.Count(x => !x.IsOptional) && args.Length <= parameters.Length;
         }
 
-        internal object[] Convert(string[] args, ArgumentsParser parser) {
+        internal object[] Convert(ParsedArgument[] args, ArgumentsParser parser) {
             object[] oArgs = new object[parameters.Length];
             for (int i = 0; i < oArgs.Length; i++) {
                 if (args.Length > i)
-                    oArgs[i] = parser.Parse(args[i], parameters[i].ParameterType);
+                    oArgs[i] = parser.Parse(args[i].argument, parameters[i].ParameterType);
                 else
                     oArgs[i] = parameters[i].DefaultValue;
             }
