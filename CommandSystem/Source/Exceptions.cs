@@ -79,9 +79,12 @@ namespace SickDev.CommandSystem {
 
         public override string Message {
             get {
-                StringBuilder builder = new StringBuilder(matches[0].name);
-                for (int i = 1; i < matches.Length; i++)
-                    builder.Append("\n" + matches[i].name);
+                StringBuilder builder = new StringBuilder();
+                for(int i = 0; i < matches.Length; i++) {
+                    builder.Append(string.Format("{0}", matches[i].signature.raw));
+                    if(i < matches.Length - 1)
+                        builder.AppendLine();
+                }
                 return "The command call \"" + rawCall + "\" is ambiguous between the following commands:\n"+builder.ToString();
             }
         }
