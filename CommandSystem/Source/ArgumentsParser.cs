@@ -32,28 +32,37 @@ namespace SickDev.CommandSystem {
             }
         }
 
+        public object Parse(ParsedArgument argument, Type type) {
+            if(argument.type != null && argument.type != type)
+                throw new ExplicitCastMismatchException(argument.type, type);
+            return Parse(argument.argument, type);
+        }
+
         //Given a type, looks for a corresponding Parser method
-        public object Parse(string value, Type type) {
+        object Parse(string value, Type type) {
             if(type.IsEnum)
                 return Enum.Parse(type, value);
-            if(type.IsArray) 
+            if(type.IsArray)
                 return HandleArrayType(value, type);
             else if(HasParserForType(type))
-                return parsers[type].Invoke(null, new object[] { value });
-            else
-                throw new NoValidParserFoundException(type);
+                return CallParser(type, value);
+            throw new NoValidParserFoundException(type);
         }
 
         object HandleArrayType(string value, Type type) {
             ParsedCommand parsedArray = new ParsedCommand("command " + value);
             Array array = (Array)Activator.CreateInstance(type, parsedArray.args.Length);
             for(int i = 0; i < parsedArray.args.Length; i++)
-                array.SetValue(Parse(parsedArray.args[i].argument, type.GetElementType()), i);
+                array.SetValue(Parse(parsedArray.args[i], type.GetElementType()), i);
             return array;
         }
 
         bool HasParserForType(Type type) {
             return parsers.ContainsKey(type);
+        }
+
+        object CallParser(Type type, string value) {
+            return parsers[type].Invoke(null, new object[] { value });
         }
     }
 }

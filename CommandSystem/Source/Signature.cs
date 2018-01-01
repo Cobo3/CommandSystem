@@ -33,7 +33,7 @@ namespace SickDev.CommandSystem {
             object[] oArgs = new object[parameters.Length];
             for (int i = 0; i < oArgs.Length; i++) {
                 if (args.Length > i)
-                    oArgs[i] = parser.Parse(args[i].argument, parameters[i].ParameterType);
+                    oArgs[i] = parser.Parse(args[i], parameters[i].ParameterType);
                 else
                     oArgs[i] = parameters[i].DefaultValue;
             }

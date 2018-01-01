@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 
 namespace SickDev.CommandSystem {
     internal static class SignatureBuilder {
-        private static readonly Dictionary<Type, string> aliases = new Dictionary<Type, string>{
+        public static readonly Dictionary<Type, string> aliases = new Dictionary<Type, string>{
             { typeof(byte), "byte" },
             { typeof(sbyte), "sbyte" },
             { typeof(short), "short" },

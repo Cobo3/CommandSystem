@@ -44,15 +44,32 @@ namespace SickDev.CommandSystem {
         }
     }
 
-    public class InvalidArgumentFormatException<T> : CommandSystemException {
-        string argument;
+    public class CommandBuildingException : CommandSystemException {
+        Type type;
+        MemberInfo member;
 
-        public InvalidArgumentFormatException(string argument) {
-            this.argument = argument;
+        public CommandBuildingException(Type type, MemberInfo member, Exception innerException):base(innerException) {
+            this.type = type;
+            this.member = member;
         }
 
         public override string Message {
-            get {return "Argument \"" + argument + "\" cannot be parsed into type " + typeof(T).Name + " because it is not in the correct format";}
+            get {
+                return "There was an error creating a command for "+member.MemberType+" "+ member.Name + " of type " + type.Name + ". Skipping command.\n" +
+                    "Error Message: " + InnerException.Message + "\nStackTrace" + InnerException.StackTrace;
+            }
+        }
+    }
+
+    public class DuplicatedParserException : CommandSystemException {
+        ParserAttribute parser;
+
+        public DuplicatedParserException(ParserAttribute parser) {
+            this.parser = parser;
+        }
+
+        public override string Message {
+            get {return "More than one Parser was specified for type " + parser.type + ".Please, note that most common types already have a built-in Parser"; }
         }
     }
 
@@ -68,25 +85,15 @@ namespace SickDev.CommandSystem {
         }
     }
 
-    public class AmbiguousCommandCallException : CommandSystemException {
-        ParsedCommand command;
-        Command[] matches;
+    public class InvalidArgumentFormatException<T> : CommandSystemException {
+        string argument;
 
-        public AmbiguousCommandCallException(ParsedCommand command, Command[] matches) {
-            this.command = command;
-            this.matches = matches;
+        public InvalidArgumentFormatException(string argument) {
+            this.argument = argument;
         }
 
         public override string Message {
-            get {
-                StringBuilder builder = new StringBuilder();
-                for(int i = 0; i < matches.Length; i++) {
-                    builder.Append(string.Format("{0}", matches[i].signature.raw));
-                    if(i < matches.Length - 1)
-                        builder.AppendLine();
-                }
-                return string.Format("The command call \'{0}' is ambiguous between the following commands:\n{1}", command.raw, builder.ToString());
-            }
+            get {return "Argument \"" + argument + "\" cannot be parsed into type " + typeof(T).Name + " because it is not in the correct format";}
         }
     }
 
@@ -115,40 +122,82 @@ namespace SickDev.CommandSystem {
             get {
                 StringBuilder builder = new StringBuilder();
                 for(int i = 0; i < overloads.Length; i++) {
-                    builder.Append(string.Format("{0}", overloads[i].signature.raw));
-                    if(i < overloads.Length - 1)
-                        builder.AppendLine();
+                    builder.AppendLine();
+                    builder.Append(overloads[i].signature.raw);
                 }
-                return string.Format("No match found between command '{0}' and any of its overloads:\n{1}", command.raw, builder.ToString());
+                return string.Format("No match found between command '{0}' and any of its overloads:{1}", command.raw, builder.ToString());
             }
         }
     }
 
-    public class DuplicatedParserException : CommandSystemException {
-        ParserAttribute parser;
+    public class AmbiguousCommandCallException : CommandSystemException {
+        ParsedCommand command;
+        Command[] matches;
 
-        public DuplicatedParserException(ParserAttribute parser) {
-            this.parser = parser;
-        }
-
-        public override string Message {
-            get {return "More than one Parser was specified for type " + parser.type + ".Please, note that most common types already have a built-in Parser"; }
-        }
-    }
-
-    public class CommandBuildingException : CommandSystemException {
-        Type type;
-        MemberInfo member;
-
-        public CommandBuildingException(Type type, MemberInfo member, Exception innerException):base(innerException) {
-            this.type = type;
-            this.member = member;
+        public AmbiguousCommandCallException(ParsedCommand command, Command[] matches) {
+            this.command = command;
+            this.matches = matches;
         }
 
         public override string Message {
             get {
-                return "There was an error creating a command for "+member.MemberType+" "+ member.Name + " of type " + type.Name + ". Skipping command.\n" +
-                    "Error Message: " + InnerException.Message + "\nStackTrace" + InnerException.StackTrace;
+                StringBuilder builder = new StringBuilder();
+                for(int i = 0; i < matches.Length; i++) {
+                    builder.AppendLine();
+                    builder.Append(matches[i].signature.raw);
+                }
+                return string.Format("The command call '{0}' is ambiguous between the following commands:{1}", command.raw, builder.ToString());
+            }
+        }
+    }
+
+    public class ExplicitCastNotFoundException : CommandSystemException {
+        string cast;
+
+        public ExplicitCastNotFoundException(string cast) {
+            this.cast = cast;
+        }
+
+        public override string Message {
+            get {
+                return string.Format("There is no suitable Type for the explicit cast '{0}'", cast);
+            }
+        }
+    }
+
+    public class AmbiguousExplicitCastException : CommandSystemException {
+        string cast;
+        Type[] conflicts;
+
+        public AmbiguousExplicitCastException(string cast, Type[] conflicts) {
+            this.cast = cast;
+            this.conflicts = conflicts;
+        }
+
+        public override string Message {
+            get {
+                StringBuilder builder = new StringBuilder();
+                for(int i = 0; i < conflicts.Length; i++) {
+                    builder.AppendLine();
+                    builder.Append(conflicts[i].FullName);
+                }
+                return string.Format("The explicit cast '{0}' is ambiguous between the following types:{1}\nPlease, refer to the Full Name of the type when casting again.", cast, builder.ToString());
+            }
+        }
+    }
+
+    public class ExplicitCastMismatchException : CommandSystemException {
+        Type castType;
+        Type argumentType;
+
+        public ExplicitCastMismatchException(Type castType, Type argumentType) {
+            this.castType = castType;
+            this.argumentType = argumentType;
+        }
+
+        public override string Message {
+            get {
+                return string.Format("The argument needs a {0}, whereas the cast was made to {1}", argumentType.Name, castType.Name);
             }
         }
     }
