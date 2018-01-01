@@ -13,8 +13,8 @@ The Assembly "CommandSystem-Unity" ads some special functionality to be used in 
 1. Create a Commands Manager
 2. Create and add Commands
 3. Execute a Command
-4. \(Optional) Create custom Parsers
-5. \(Optional) Create custom CommandTypes
+4. (Optional) Create custom Parsers
+5. (Optional) Create custom CommandTypes
 
 ### Create a Commands Manager
 The class CommandsManager is the main interface through the system, and you'll need one if you plan on using it.
@@ -22,13 +22,20 @@ The class CommandsManager is the main interface through the system, and you'll n
 using SickDev.CommandSystem;
 
 static void Main(string[] args){
-    CommandsManager manager = new CommandsManager();
-    Config.RegisterAssembly("Your assembly name");
+    Configuration configuration = new Configuration("Test");
+    CommandsManager manager = new CommandsManager(configuration);
 }
 ```
 
-#### Registering Assemblies
-CommandSystem needs to know where to look for commands and parsers. Assemblies containing such elements need to be registered using "Config.RegisterAssembly"
+#### Configuring the CommandsManager
+To function properly, the CommandsManager needs a configuration object. Currently, that configuration only contains registered assemblies, but it is planned on containing more functionality in the future.
+
+##### Registering Assemblies
+CommandSystem needs to know where to look for commands and parsers. Assemblies containing such elements need to be registered using "Configuration.RegisterAssembly".
+
+The Configuration class contains a constructor overload for registering assemblies in-line too.
+
+Registered assemblies need only to contain the name of the assembly.
 
 ### Create and add Commands
 Commands can be created in three differet ways.
@@ -141,6 +148,14 @@ Examples:
 - CommandName --> The command "CommandName" is executed without arguments.
 - CommandName 2 3 --> The command is executed with two arguments: "2" & "3".
 - CommandName 2 "parameter with spaces" "another parameter with spaces" --> Three arguments, two of which contain spaces.
+
+##### Explicit Casts
+In order to prevent AmbiguousCommandCallException from being thrown, one can and should cast arguments into specific types. To explicitely cast an argument to a specific type, wrap the type between braces and place it before the argument, without spaces.
+
+Examples:
+- CommandName (int)2 --> Finds an overload that has one integer argument.
+- CommandName (float)2 (string)3 --> Finds an overload that has a float and a string parameter.
+- CommandName 2 (ExampleCast)"parameter with spaces" "another parameter with spaces" --> Three arguments, specifying only that the second one should be cast to ExampleCast type.
 
 #### The Parser Attribute
 A match is only guaranteed when every input argument suceeds at the conversion to the command's argument type.
