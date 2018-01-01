@@ -7,20 +7,14 @@ namespace Test {
             CommandsManager.onMessage += Console.WriteLine;
             CommandsManager.onExceptionThrown += exception=>Console.WriteLine(exception.Message);
 
-            CommandsManager manager = new CommandsManager(new Configuration("Test"));
+            Configuration configuration = new Configuration("Test");
+            CommandsManager manager = new CommandsManager(configuration);
             manager.Load();
             manager.Add(new CommandsBuilder(typeof(Program)).Build());
-            Console.WriteLine(manager.Execute("Max (int)2 (float)3"));
+            Console.WriteLine(manager.Execute("Max (int)2 3"));
         }
 
         public static float Max(float a, float b) {
-            if(a > b)
-                return a;
-            else
-                return b;
-        }
-
-        public static int Max(int a, int b) {
             if(a > b)
                 return a;
             else
