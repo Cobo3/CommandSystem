@@ -59,8 +59,8 @@ Using this method, you first need to create the command and then add it to the C
 using SickDev.CommandSystem;
 
 static void Main(string[] args){
-    CommandsManager manager = new CommandsManager();
-    Config.RegisterAssembly("Your assembly name");
+    Configuration configuration = new Configuration("Your assembly name");
+    CommandsManager manager = new CommandsManager(configuration);
     
     Command actionCommand = new ActionCommand<int>(ExampleActionCommand);
     Command funcCommand = new FuncCommand<int, string, bool>(ExampleFuncCommand);
@@ -116,8 +116,8 @@ For aditional options, you can also call "GetCommandExecuter".
 using SickDev.CommandSystem;
 
 static void Main(string[] args){
-    CommandsManager manager = new CommandsManager();
-    Config.RegisterAssembly("Your assembly name");
+    Configuration configuration = new Configuration("Your assembly name");
+    CommandsManager manager = new CommandsManager(configuration);
     
     Command funcCommand = new FuncCommand<int, string, bool>(ExampleFuncCommand);    
     manager.Add(funcCommand);
