@@ -15,12 +15,7 @@ namespace SickDev.CommandSystem {
 
         [Parser(typeof(byte))]
         static byte ParseByte(string value) {
-            try {
-                return byte.Parse(value.Trim());
-            }
-            catch {
-                throw new InvalidArgumentFormatException<byte>(value);
-            }
+            return byte.Parse(value.Trim());
         }
 
         [Parser(typeof(byte?))]
@@ -30,12 +25,7 @@ namespace SickDev.CommandSystem {
 
         [Parser(typeof(sbyte))]
         static sbyte ParseSbyte(string value) {
-            try {
-                return sbyte.Parse(value.Trim());
-            }
-            catch {
-                throw new InvalidArgumentFormatException<sbyte>(value);
-            }
+            return sbyte.Parse(value.Trim());
         }
 
         [Parser(typeof(sbyte?))]
@@ -45,12 +35,7 @@ namespace SickDev.CommandSystem {
 
         [Parser(typeof(short))]
         static short ParseShort(string value) {
-            try {
-                return short.Parse(value.Trim());
-            }
-            catch {
-                throw new InvalidArgumentFormatException<short>(value);
-            }
+            return short.Parse(value.Trim());
         }
 
         [Parser(typeof(short?))]
@@ -60,12 +45,7 @@ namespace SickDev.CommandSystem {
 
         [Parser(typeof(ushort))]
         static ushort ParseUshort(string value) {
-            try {
-                return ushort.Parse(value.Trim());
-            }
-            catch {
-                throw new InvalidArgumentFormatException<ushort>(value);
-            }
+            return ushort.Parse(value.Trim());
         }
 
         [Parser(typeof(ushort?))]
@@ -75,12 +55,7 @@ namespace SickDev.CommandSystem {
 
         [Parser(typeof(int))]
         static int ParseInt(string value) {
-            try {
-                return int.Parse(value.Trim());
-            }
-            catch {
-                throw new InvalidArgumentFormatException<int>(value);
-            }
+            return int.Parse(value.Trim());
         }
 
         [Parser(typeof(int?))]
@@ -90,12 +65,7 @@ namespace SickDev.CommandSystem {
 
         [Parser(typeof(uint))]
         static uint ParseUint(string value) {
-            try {
-                return uint.Parse(value.Trim());
-            }
-            catch {
-                throw new InvalidArgumentFormatException<uint>(value);
-            }
+            return uint.Parse(value.Trim());
         }
 
         [Parser(typeof(uint?))]
@@ -105,12 +75,7 @@ namespace SickDev.CommandSystem {
 
         [Parser(typeof(long))]
         static long ParseLong(string value) {
-            try {
-                return long.Parse(value.Trim());
-            }
-            catch {
-                throw new InvalidArgumentFormatException<long>(value);
-            }
+            return long.Parse(value.Trim());
         }
 
         [Parser(typeof(long?))]
@@ -120,12 +85,7 @@ namespace SickDev.CommandSystem {
 
         [Parser(typeof(ulong))]
         static ulong ParseUlong(string value) {
-            try {
-                return ulong.Parse(value.Trim());
-            }
-            catch {
-                throw new InvalidArgumentFormatException<ulong>(value);
-            }
+            return ulong.Parse(value.Trim());
         }
 
         [Parser(typeof(ulong?))]
@@ -135,12 +95,7 @@ namespace SickDev.CommandSystem {
 
         [Parser(typeof(float))]
         static float ParseFloat(string value) {
-            try {
-                return float.Parse(value.Trim());
-            }
-            catch {
-                throw new InvalidArgumentFormatException<float>(value);
-            }
+            return float.Parse(value.Trim());
         }
 
         [Parser(typeof(float?))]
@@ -150,12 +105,7 @@ namespace SickDev.CommandSystem {
 
         [Parser(typeof(double))]
         static double ParseDouble(string value) {
-            try {
-                return double.Parse(value.Trim());
-            }
-            catch {
-                throw new InvalidArgumentFormatException<double>(value);
-            }
+            return double.Parse(value.Trim());
         }
 
         [Parser(typeof(double?))]
@@ -165,12 +115,7 @@ namespace SickDev.CommandSystem {
 
         [Parser(typeof(decimal))]
         static decimal ParseDecimal(string value) {
-            try {
-                return decimal.Parse(value.Trim());
-            }
-            catch {
-                throw new InvalidArgumentFormatException<decimal>(value);
-            }
+            return decimal.Parse(value.Trim());
         }
 
         [Parser(typeof(decimal?))]
@@ -213,12 +158,7 @@ namespace SickDev.CommandSystem {
 
         [Parser(typeof(char))]
         static char ParseChar(string value) {
-            try {
-                return char.Parse(value);
-            }
-            catch {
-                throw new InvalidArgumentFormatException<char>(value);
-            }
+            return char.Parse(value);
         }
 
         [Parser(typeof(char?))]
