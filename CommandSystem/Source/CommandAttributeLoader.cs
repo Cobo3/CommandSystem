@@ -21,15 +21,14 @@ namespace SickDev.CommandSystem {
             List<Command> commands = new List<Command>();
             MethodInfo[] methods = type.GetMethods(BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             for (int i = 0; i < methods.Length; i++) {
-                try {
-                    CommandAttributeVerifier verifier = new CommandAttributeVerifier(methods[i]);
-                    if (verifier.hasCommandAttribute) {
-                        Command command = verifier.ExtractCommand();
-                        commands.Add(command);
+                CommandAttributeVerifier verifier = new CommandAttributeVerifier(methods[i]);
+                if (verifier.hasCommandAttribute) {
+                    if(!verifier.isDeclarationSupported) {
+                        CommandsManager.SendException(new UnsupportedCommandDeclarationException(methods[i]));
+                        continue;
                     }
-                }
-                catch (Exception exception) {
-                    CommandsManager.SendException(exception);
+                    Command command = verifier.ExtractCommand();
+                    commands.Add(command);
                 }
             }
             return commands.ToArray();

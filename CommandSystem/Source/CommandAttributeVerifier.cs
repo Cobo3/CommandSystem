@@ -7,7 +7,7 @@ namespace SickDev.CommandSystem {
         CommandAttribute attribute;
 
         public bool hasCommandAttribute { get { return attribute != null; } }
-        bool isDeclarationSupported { get { return !(!method.IsStatic || method.IsGenericMethod || method.IsGenericMethodDefinition); } }
+        public bool isDeclarationSupported { get { return !(!method.IsStatic || method.IsGenericMethod || method.IsGenericMethodDefinition); } }
 
         public CommandAttributeVerifier(MethodInfo method) {
             this.method = method;
