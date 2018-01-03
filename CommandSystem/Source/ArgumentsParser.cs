@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Reflection;
 using System.Collections.Generic;
 
@@ -8,9 +9,11 @@ namespace SickDev.CommandSystem {
         Dictionary<Type, MethodInfo> parsers;
         ReflectionFinder finder;
 
+        public bool dataLoaded { get; private set; }
+
         public ArgumentsParser(ReflectionFinder finder) {
             this.finder = finder;
-            Load();
+            new Thread(Load).Start();
         }
 
         //Finds every Parser method and adds it to the array
@@ -30,6 +33,7 @@ namespace SickDev.CommandSystem {
                     }
                 }
             }
+            dataLoaded = true;
         }
 
         public object Parse(ParsedArgument argument, Type type) {

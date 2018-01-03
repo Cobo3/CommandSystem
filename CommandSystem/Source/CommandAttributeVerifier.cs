@@ -11,7 +11,9 @@ namespace SickDev.CommandSystem {
 
         public CommandAttributeVerifier(MethodInfo method) {
             this.method = method;
-            attribute = Attribute.GetCustomAttribute(method, typeof(CommandAttribute)) as CommandAttribute;
+            object[] attributes = method.GetCustomAttributes(typeof(CommandAttribute), false);
+            if(attributes.Length > 0)
+                attribute = attributes[0] as CommandAttribute;
         }
 
         public Command ExtractCommand() {

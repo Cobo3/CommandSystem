@@ -36,7 +36,7 @@ namespace SickDev.CommandSystem {
             List<Type> types = new List<Type>();
             Assembly[] assemblies = GetAssembliesWithCommands();
             CommandsManager.SendMessage("Loading CommandSystem data from: " +
-                String.Join(", ", assemblies.ToList().ConvertAll(x => {
+                string.Join(", ", assemblies.ToList().ConvertAll(x => {
                     AssemblyName name = x.GetName();
                     string path = name.CodeBase;
                     string extension = path.Substring(path.LastIndexOf('.'));

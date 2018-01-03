@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Collections.Generic;
 
 namespace SickDev.CommandSystem {
@@ -8,25 +9,37 @@ namespace SickDev.CommandSystem {
         public delegate void OnMessage(string message);
         public delegate void OnCommandModified(Command command);
 
+        object block = new object();
         List<Command> commands = new List<Command>();
+        bool commandsLoaded;
+
         readonly Configuration configuration;
         readonly ReflectionFinder finder;
         readonly ArgumentsParser parser;
+        readonly CommandAttributeLoader loader;
 
         public event OnCommandModified onCommandAdded;
         public event OnCommandModified onCommandRemoved;
         public static event OnExceptionThrown onExceptionThrown;
         public static event OnMessage onMessage;
 
+        public bool allDataLoaded { get { return commandsLoaded && parser.dataLoaded; } }
+
         public CommandsManager(Configuration configuration) {
             this.configuration = configuration;
             finder = new ReflectionFinder(configuration);
             parser = new ArgumentsParser(finder);
+            loader = new CommandAttributeLoader(finder);
         }
 
-        public void Load() {
-            CommandAttributeLoader loader = new CommandAttributeLoader(finder);
+        public void LoadCommands() {
+            Thread thread = new Thread(LoadThreaded);
+            thread.Start();
+        }
+
+        void LoadThreaded() {
             Add(loader.LoadCommands());
+            commandsLoaded = true;
         }
 
         public void Add(Command[] commands) {
@@ -35,10 +48,12 @@ namespace SickDev.CommandSystem {
         }
 
         public void Add(Command command) {
-            if (!commands.Contains(command) || !commands.Any(x=>x.Equals(command))) {
-                commands.Add(command);
-                if (onCommandAdded != null)
-                    onCommandAdded(command);
+            lock(block) {
+                if (!commands.Contains(command) || !commands.Any(x=>x.Equals(command))) {
+                    commands.Add(command);
+                    if (onCommandAdded != null)
+                        onCommandAdded(command);
+                }
             }
         }
 

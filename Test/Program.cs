@@ -9,7 +9,7 @@ namespace Test {
 
             Configuration configuration = new Configuration("Test");
             CommandsManager manager = new CommandsManager(configuration);
-            manager.Load();
+            manager.LoadCommands();
             manager.Add(new CommandsBuilder(typeof(Program)).Build());
             Console.WriteLine(manager.Execute("Max (int)2 3"));
         }
