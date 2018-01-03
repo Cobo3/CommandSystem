@@ -11,7 +11,6 @@ namespace SickDev.CommandSystem {
 
         object block = new object();
         List<Command> commands = new List<Command>();
-        bool commandsLoaded;
 
         readonly Configuration configuration;
         readonly ReflectionFinder finder;
@@ -23,7 +22,7 @@ namespace SickDev.CommandSystem {
         public static event OnExceptionThrown onExceptionThrown;
         public static event OnMessage onMessage;
 
-        public bool allDataLoaded { get { return commandsLoaded && parser.dataLoaded; } }
+        public bool allDataLoaded { get { return parser.dataLoaded; } }
 
         public CommandsManager(Configuration configuration) {
             this.configuration = configuration;
@@ -39,7 +38,6 @@ namespace SickDev.CommandSystem {
 
         void LoadThreaded() {
             Add(loader.LoadCommands());
-            commandsLoaded = true;
         }
 
         public void Add(Command[] commands) {
