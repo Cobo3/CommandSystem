@@ -26,6 +26,7 @@ static void Main(string[] args){
     CommandsManager manager = new CommandsManager(configuration);
 }
 ```
+The property "allDataLoaded" from CommandsManager will tell you when all the loading has finished.
 
 #### Configuring the CommandsManager
 To function properly, the CommandsManager needs a configuration object. Currently, that configuration only contains registered assemblies, but it is planned on containing more functionality in the future.
@@ -84,7 +85,7 @@ There is a third CommandType called MethodInfoCommand that can be used when you 
 In order to use this method, just place the Command attribute on a static method and it will be available out of the box.
 It is great when you need something quick and don't want to bother adding the command manually.
 
-In order to be able to use these type of commands, you need to load them calling the "Load" method in the CommandsManager. That will search all the commands of this type and load them into the manager. In order to do that, however, you first need to specify where the manager should search.
+In order to be able to use these type of commands, you need to load them calling the "LoadCommands" method in the CommandsManager. That will search all the commands of this type and load them into the manager. In order to do that, however, you first need to specify where the manager should search.
 
 ```C#
 using SickDev.CommandSystem;
@@ -92,7 +93,7 @@ using SickDev.CommandSystem;
 static void Main(string[] args){
     CommandsManager manager = new CommandsManager();
     Config.RegisterAssembly("Your assembly name");
-    manager.Load();
+    manager.LoadCommands();
 }
 
 [Command]
