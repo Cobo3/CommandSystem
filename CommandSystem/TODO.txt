@@ -1,7 +1,9 @@
 ============FIXES============
-- Can add delegates as commands now?
+- Can add delegates and events as commands now?
+- #if DEV_CONSOLE_USE_LOCATION
 
 ===========FEATURES==========
+- Support for Unity 2017.1
 - Remove log static methods
 - Load/Unload commands at runtime from CommandsBuilder
 - Add support for fields & properties
