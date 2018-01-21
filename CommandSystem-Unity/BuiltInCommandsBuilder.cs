@@ -350,9 +350,9 @@ namespace SickDev.CommandSystem.Unity {
             manager.Add(new FuncCommand<Vector3>(() => UnityEngine.Input.gyro.userAcceleration) { alias = "userAcceleration", useClassName = true });
             manager.Add(new FuncCommand<float>(() => UnityEngine.Input.gyro.updateInterval) { alias = "updateInterval", useClassName = true });
         }
-
+        
+        [System.Diagnostics.Conditional("COMMAND_SYSTEM_USE_LOCATION")]
         protected void LocationService() {
-#if DEV_CONSOLE_USE_LOCATION
             Type type = typeof(LocationService);
             CommandsBuilder builder = new CommandsBuilder(type);
             builder.useClassName = true;
@@ -365,7 +365,6 @@ namespace SickDev.CommandSystem.Unity {
             manager.Add(new FuncCommand<float>(() => UnityEngine.Input.location.lastData.longitude) { alias = "longitude", useClassName = true });
             manager.Add(new FuncCommand<float>(() => UnityEngine.Input.location.lastData.verticalAccuracy) { alias = "verticalAccuracy", useClassName = true });
             manager.Add(new FuncCommand<double>(() => UnityEngine.Input.location.lastData.timestamp) { alias = "timestamp", useClassName = true });
-#endif
         }
 
         protected void IOSDevice() {
@@ -445,14 +444,13 @@ namespace SickDev.CommandSystem.Unity {
             manager.Add(builder.Build());
         }
 
+        [System.Diagnostics.Conditional("COMMAND_SYSTEM_USE_MICROPHONE")]
         protected void Microphone() {
-#if DEV_CONSOLE_USE_MICROPHONE
             Type type = typeof(Microphone);
             CommandsBuilder builder = new CommandsBuilder(type);
             builder.useClassName = true;
             builder.methodsSettings.AddExceptions("GetDeviceCaps");
             manager.Add(builder.Build());
-#endif
         }
 
         protected void Physics() {
