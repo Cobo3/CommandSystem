@@ -1,6 +1,6 @@
 ============FIXES============
 - Can add delegates and events as commands now?
-- #if DEV_CONSOLE_USE_LOCATION
+- Microphone and Location App permissions
 
 ===========FEATURES==========
 - Support for Unity 2017.1
