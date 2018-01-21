@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace SickDev.CommandSystem.Unity {
     static class Parsers {
@@ -61,8 +62,17 @@ namespace SickDev.CommandSystem.Unity {
         static GameObject ParseGameObject(string value) {
             if(value.StartsWith("res:"))
                 return Resources.Load<GameObject>(value.Substring(4).Trim());
-            else
-                return GameObject.Find(value);
+
+            for(int i = 0; i < SceneManager.sceneCount; i++) {
+                GameObject[] root = SceneManager.GetSceneAt(i).GetRootGameObjects();
+                for(int j = 0; j < root.Length; j++) {
+                    Transform[] children = root[j].GetComponentsInChildren<Transform>(true);
+                    for(int k = 0; k < children.Length; k++)
+                        if(children[k].name == value)
+                            return children[k].gameObject;
+                }
+            }
+            return null;
         }
 
         [Parser(typeof(Texture2D))]
