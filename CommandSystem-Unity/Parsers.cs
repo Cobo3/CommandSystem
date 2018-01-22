@@ -60,7 +60,7 @@ namespace SickDev.CommandSystem.Unity {
 
         [Parser(typeof(GameObject))]
         static GameObject ParseGameObject(string value) {
-            if(value.StartsWith("res:"))
+            if(value.StartsWith("res:", StringComparison.InvariantCultureIgnoreCase))
                 return Resources.Load<GameObject>(value.Substring(4).Trim());
 
             for(int i = 0; i < SceneManager.sceneCount; i++) {
