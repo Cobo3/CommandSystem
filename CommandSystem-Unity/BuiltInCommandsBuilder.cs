@@ -25,11 +25,9 @@ namespace SickDev.CommandSystem.Unity {
         }
 
         protected void PerformanceReporting() {
-#if UNITY_5_6_OR_NEWER
             CommandsBuilder builder = new CommandsBuilder(typeof(UnityEngine.Analytics.PerformanceReporting));
             builder.useClassName = true;
             manager.Add(builder.Build());
-#endif
         }
 
         protected void AndroidInput() {
@@ -49,7 +47,7 @@ namespace SickDev.CommandSystem.Unity {
         }
 
         protected void AppleReplayKit() {
-#if UNITY_5_6_OR_NEWER && UNITY_IOS
+#if UNITY_IOS
             Type type = typeof(UnityEngine.Apple.ReplayKit.ReplayKit);
             CommandsBuilder builder = new CommandsBuilder(type);
             builder.useClassName = true;
@@ -70,7 +68,7 @@ namespace SickDev.CommandSystem.Unity {
         }
 
         protected void AppleTvRemote() {
-#if UNITY_5_6_OR_NEWER && UNITY_IOS
+#if UNITY_IOS
             Type type = typeof(UnityEngine.Apple.TV.Remote);
             CommandsBuilder builder = new CommandsBuilder(type);
             builder.className = "AppleTvRemote";
@@ -165,13 +163,11 @@ namespace SickDev.CommandSystem.Unity {
             builder.useClassName = true;
             builder.methodsSettings.AddExceptions("RGBToHSV");
             manager.Add(builder.Build());
-#if UNITY_5_3_OR_NEWER
             manager.Add(new FuncCommand<Color, string>(color => {
                 float h, s, v;
                 UnityEngine.Color.RGBToHSV(color, out h, out s, out v);
                 return string.Format("H:{0} S:{1} V:{2}", h, s, v);
             }) { alias = "RGBToHSV", useClassName = true });
-#endif
         }
 
         protected void Color32() {
@@ -202,12 +198,10 @@ namespace SickDev.CommandSystem.Unity {
         }
 
         protected void CrashReportHandler() {
-#if UNITY_5_5_OR_NEWER
             Type type = typeof(UnityEngine.CrashReportHandler.CrashReportHandler);
             CommandsBuilder builder = new CommandsBuilder(type);
             builder.useClassName = true;
             manager.Add(builder.Build());
-#endif
         }
 
         protected void Cursor() {
@@ -224,21 +218,17 @@ namespace SickDev.CommandSystem.Unity {
             builder.methodsSettings.AddExceptions("Assert", "AssertFormat", "DrawLine", "DrawRay");
             builder.propertiesSettings.AddExceptions("logger");
             manager.Add(builder.Build());
-#if UNITY_5_3_OR_NEWER
             manager.Add(new ActionCommand<LogType>(value => UnityEngine.Debug.unityLogger.filterLogType = value) { alias = "filterLogType", useClassName = true });
             manager.Add(new ActionCommand<bool>(value => UnityEngine.Debug.unityLogger.logEnabled = value) { alias = "logEnabled", useClassName = true });
             manager.Add(new FuncCommand<LogType>(() => UnityEngine.Debug.unityLogger.filterLogType) { alias = "filterLogType", useClassName = true });
             manager.Add(new FuncCommand<bool>(() => UnityEngine.Debug.unityLogger.logEnabled) { alias = "logEnabled", useClassName = true });
-#endif
         }
 
         protected void PlayerConnection() {
-#if UNITY_5_4_OR_NEWER
             Type type = typeof(UnityEngine.Diagnostics.PlayerConnection);
             CommandsBuilder builder = new CommandsBuilder(type);
             builder.useClassName = true;
             manager.Add(builder.Build());
-#endif
         }
 
         protected void Display() {
@@ -249,19 +239,11 @@ namespace SickDev.CommandSystem.Unity {
             builder.propertiesSettings.accesModiferBindings = CommandsBuilder.AccesModifierBindings.None;
             manager.Add(builder.Build());
             manager.Add(new FuncCommand<int>(() => UnityEngine.Display.displays.Length) { alias = "displayCount", className = type.Name });
-#if UNITY_5_6_OR_NEWER
             manager.Add(new FuncCommand<int, string>(index => {
                 Display display = UnityEngine.Display.displays[index];
                 return string.Format("Active: {0}\tRenderResolution: {1}x{2}\tSystemResolution: {3}x{4}",
                     display.active, display.renderingWidth, display.renderingHeight, display.systemWidth, display.systemHeight);
             }) { alias = "GetDisplayInfo", useClassName = true });
-#else
-            manager.Add(new FuncCommand<int, string>(index => {
-                Display display = UnityEngine.Display.displays[index];
-                return string.Format("RenderResolution: {0}x{1}\tSystemResolution: {2}x{3}",
-                    display.renderingWidth, display.renderingHeight, display.systemWidth, display.systemHeight);
-            }) { alias = "GetDisplayInfo", className = type.Name });
-#endif
         }
 
         protected void DynamicGI() {
@@ -414,12 +396,10 @@ namespace SickDev.CommandSystem.Unity {
         }
 
         protected void LightProbeProxyVolume() {
-#if UNITY_5_4_OR_NEWER
             Type type = typeof(LightProbeProxyVolume);
             CommandsBuilder builder = new CommandsBuilder(type);
             builder.useClassName = true;
             manager.Add(builder.Build());
-#endif
         }
 
         protected void LODGroup() {
@@ -514,21 +494,17 @@ namespace SickDev.CommandSystem.Unity {
                 "OverlapCapsuleNonAlloc", "OverlapCircleNonAlloc", "OverlapCollider", "OverlapPoint", "OverlapPointNonAlloc", "Raycast", "RaycastAll", "RaycastNonAlloc"
             );
             builder.methodsSettings.AddExceptions(
-#if UNITY_5_5_OR_NEWER
                 type.GetMethod("OverlapCapsule", new Type[] { typeof(Vector2), typeof(Vector2), typeof(CapsuleDirection2D), typeof(float), typeof(int) }),
                 type.GetMethod("OverlapCapsule", new Type[] { typeof(Vector2), typeof(Vector2), typeof(CapsuleDirection2D), typeof(float), typeof(int), typeof(float) }),
                 type.GetMethod("OverlapCapsule", new Type[] { typeof(Vector2), typeof(Vector2), typeof(CapsuleDirection2D), typeof(float), typeof(int), typeof(float), typeof(float) }),
                 type.GetMethod("OverlapCapsuleAll", new Type[] { typeof(Vector2), typeof(Vector2), typeof(CapsuleDirection2D), typeof(float), typeof(int) }),
                 type.GetMethod("OverlapCapsuleAll", new Type[] { typeof(Vector2), typeof(Vector2), typeof(CapsuleDirection2D), typeof(float), typeof(int), typeof(float) }),
                 type.GetMethod("OverlapCapsuleAll", new Type[] { typeof(Vector2), typeof(Vector2), typeof(CapsuleDirection2D), typeof(float), typeof(int), typeof(float), typeof(float) }),
-#if UNITY_5_6_OR_NEWER
                 type.GetMethod("OverlapArea", new Type[] { typeof(Vector2), typeof(Vector2), typeof(ContactFilter2D), typeof(Collider2D[]) }),
                 type.GetMethod("OverlapBox", new Type[] { typeof(Vector2), typeof(Vector2), typeof(float), typeof(ContactFilter2D), typeof(Collider2D[]) }),
                 type.GetMethod("OverlapCapsule", new Type[] { typeof(Vector2), typeof(Vector2), typeof(CapsuleDirection2D), typeof(float), typeof(ContactFilter2D), typeof(Collider2D[]) }),
                 type.GetMethod("OverlapCircle", new Type[] { typeof(Vector2), typeof(float), typeof(ContactFilter2D), typeof(Collider2D[]) }),
                 type.GetMethod("OverlapPoint", new Type[] { typeof(Vector2), typeof(ContactFilter2D), typeof(Collider2D[]) }),
-#endif
-#endif
                 type.GetMethod("OverlapArea", new Type[] { typeof(Vector2), typeof(Vector2), typeof(int), typeof(float), typeof(float) }),
                 type.GetMethod("OverlapAreaAll", new Type[] { typeof(Vector2), typeof(Vector2), typeof(int), typeof(float), typeof(float) }),
                 type.GetMethod("OverlapBox", new Type[] { typeof(Vector2), typeof(Vector2), typeof(float), typeof(int), typeof(float) }),
@@ -559,13 +535,7 @@ namespace SickDev.CommandSystem.Unity {
         }
 
         protected void Profiler() {
-            Type type = typeof(
-#if UNITY_5_5_OR_NEWER
-                UnityEngine.Profiling.Profiler
-#else
-                UnityEngine.Profiler
-#endif
-            );
+            Type type = typeof(UnityEngine.Profiling.Profiler);
             CommandsBuilder builder = new CommandsBuilder(type);
             builder.useClassName = true;
             builder.methodsSettings.AddExceptions("GetRuntimeMemorySizeLong");
@@ -614,23 +584,19 @@ namespace SickDev.CommandSystem.Unity {
         }
 
         protected void RemoteSettings() {
-#if UNITY_5_5_OR_NEWER
             Type type = typeof(RemoteSettings);
             CommandsBuilder builder = new CommandsBuilder(type);
             builder.useClassName = true;
             manager.Add(builder.Build());
-#endif
         }
 
         protected void GraphicsSettings() {
-#if UNITY_5_3_OR_NEWER
             Type type = typeof(UnityEngine.Rendering.GraphicsSettings);
             CommandsBuilder builder = new CommandsBuilder(type);
             builder.useClassName = true;
             builder.propertiesSettings.AddExceptions("renderPipelineAsset");
             builder.methodsSettings.AddExceptions("GetCustomShader", "SetCustomShader");
             manager.Add(builder.Build());
-#endif
         }
 
         protected void RenderSettings() {
@@ -641,9 +607,7 @@ namespace SickDev.CommandSystem.Unity {
             builder.methodsSettings.AddExceptions("GetCustomShader", "SetCustomShader");
             manager.Add(builder.Build());
             manager.Add(new FuncCommand<Material>(() => UnityEngine.RenderSettings.skybox) { alias = "skybox", className = type.Name });
-#if UNITY_5_5_OR_NEWER
             manager.Add(new FuncCommand<Light>(() => UnityEngine.RenderSettings.sun) { alias = "sun", className = type.Name });
-#endif
         }
 
         protected void SamsungTV() {
@@ -656,7 +620,6 @@ namespace SickDev.CommandSystem.Unity {
         }
 
         protected void SceneManager() {
-#if UNITY_5_3_OR_NEWER
             Type type = typeof(UnityEngine.SceneManagement.SceneManager);
             CommandsBuilder builder = new CommandsBuilder(type);
             builder.useClassName = true;
@@ -665,19 +628,14 @@ namespace SickDev.CommandSystem.Unity {
             manager.Add(builder.Build());
             manager.Add(new FuncCommand<string>(() => UnityEngine.SceneManagement.SceneManager.GetActiveScene().name) { alias = "GetActiveScene", useClassName = true });
             manager.Add(new FuncCommand<int, string>((index) => UnityEngine.SceneManagement.SceneManager.GetSceneAt(index).name) { alias = "GetSceneAt", useClassName = true });
-#if UNITY_5_5_OR_NEWER
             manager.Add(new FuncCommand<int, string>((buildIndex) => UnityEngine.SceneManagement.SceneManager.GetSceneByBuildIndex(buildIndex).name) { alias = "GetSceneByBuildIndex", useClassName = true });
-#endif
-#endif
         }
 
         protected void SceneUtility() {
-#if UNITY_5_5_OR_NEWER
             Type type = typeof(UnityEngine.SceneManagement.SceneUtility);
             CommandsBuilder builder = new CommandsBuilder(type);
             builder.useClassName = true;
             manager.Add(builder.Build());
-#endif
         }
 
         protected void Screen() {
@@ -782,7 +740,7 @@ namespace SickDev.CommandSystem.Unity {
         protected void VRDevice() {
             Type type = typeof(
 #if UNITY_2017_2_OR_NEWER
-                UnityEngine.XR.VRDevice
+                UnityEngine.XR.XRDevice
 #else
                 UnityEngine.VR.VRDevice
 #endif
@@ -795,7 +753,7 @@ namespace SickDev.CommandSystem.Unity {
         protected void VRSettings() {
             Type type = typeof(
 #if UNITY_2017_2_OR_NEWER
-                UnityEngine.XR.VRSettings
+                UnityEngine.XR.XRSettings
 #else
                 UnityEngine.VR.VRSettings
 #endif
