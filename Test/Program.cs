@@ -12,10 +12,13 @@ namespace Test {
             Configuration configuration = new Configuration("Test", "CommandSystem-Unity");
             manager = new CommandsManager(configuration);
             manager.LoadCommands();
-            Test test = new Test(manager);
-            test.Build();
-            //manager.Add(new CommandsBuilder(typeof(Program)).Build());
-            manager.Add(command = new FuncCommand<float, float, float>(Max));
+            Func<float, float, float> action = (a, b)=> {
+                if(a > b)
+                    return a;
+                else
+                    return b;
+            };
+            manager.Add(command = new FuncCommand<float, float, float>(action));
             Console.WriteLine(manager.Execute("Max 2 3"));
             Console.WriteLine(manager.Execute("Max 2 3"));
         }
@@ -37,14 +40,6 @@ namespace Test {
 
         public static int Max(bool a, bool b) {
             return 2;
-        }
-
-        class Test : SickDev.CommandSystem.Unity.BuiltInCommandsBuilder {
-            public Test(CommandsManager manager) : base(manager) { }
-
-            public override void Build() {
-                SystemInfo();
-            }
         }
     }
 }
