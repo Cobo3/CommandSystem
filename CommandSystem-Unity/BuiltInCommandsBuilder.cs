@@ -276,6 +276,9 @@ namespace SickDev.CommandSystem.Unity {
         }
 
         protected void Handheld() {
+            if(UnityEngine.Application.platform != RuntimePlatform.Android && UnityEngine.Application.platform != RuntimePlatform.IPhonePlayer)
+                return;
+
             Type type = typeof(Handheld);
             CommandsBuilder builder = new CommandsBuilder(type);
             builder.useClassName = true;
