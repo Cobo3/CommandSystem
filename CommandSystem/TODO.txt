@@ -1,5 +1,4 @@
 ============FIXES============
-- Remove description maybe?
 
 ===========FEATURES==========
 - Add support for text colors such as Color.green

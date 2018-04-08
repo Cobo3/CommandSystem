@@ -273,6 +273,8 @@ namespace SickDev.CommandSystem.Unity {
             manager.Add(new ActionCommand<GameObject, string>((gameObject, methodName) => gameObject.SendMessage(methodName)) { alias = "SendMessage", className = type.Name });
             manager.Add(new ActionCommand<GameObject, bool>((gameObject, value) => gameObject.SetActive(value)) { alias = "SetActive", className = type.Name });
             manager.Add(new FuncCommand<GameObject, bool>(gameObject => gameObject.activeSelf) { alias = "GetActive", className = type.Name });
+            manager.Add(new ActionCommand<GameObject>(gameObject => UnityEngine.Object.Destroy(gameObject)) { alias = "Destroy", className = type.Name });
+            manager.Add(new ActionCommand<GameObject, float>((gameObject, t) => UnityEngine.Object.Destroy(gameObject, t)) { alias = "Destroy", className = type.Name });
         }
 
         protected void Handheld() {
