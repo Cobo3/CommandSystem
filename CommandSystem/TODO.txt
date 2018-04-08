@@ -1,5 +1,4 @@
 ============FIXES============
-- ExecutionScope.lambda_method (lo del useClass del CommandsBuilder)
 - Can add delegates and events as commands now?
 - Microphone and Location App permissions
 

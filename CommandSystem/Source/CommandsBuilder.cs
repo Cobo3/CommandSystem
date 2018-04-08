@@ -19,6 +19,7 @@ namespace SickDev.CommandSystem {
 
         public CommandsBuilder(Type type) {
             this.type = type;
+            className = type.Name;
             fieldsSettings = new PropertyBuilderSettings();
             propertiesSettings = new PropertyBuilderSettings();
             methodsSettings = new MemberBuilderSettings();
@@ -77,6 +78,7 @@ namespace SickDev.CommandSystem {
         void ProcessFieldLamdaExpression(FieldInfo field, LambdaExpression expression) {
             Delegate deleg = expression.Compile();
             Command command = new Command(deleg) {
+                alias = field.Name,
                 className = className,
                 useClassName = useClassName
             };
