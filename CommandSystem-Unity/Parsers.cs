@@ -35,7 +35,7 @@ namespace SickDev.CommandSystem.Unity {
         }
 
         [Parser(typeof(Color32))]
-        static Color ParseColor32(string value) {
+        static Color32 ParseColor32(string value) {
             byte[] values = GenericParser<byte, Color32>(value, 3, 4);
             return new Color32(values[0], values[1], values[2], values.Length > 3 ? values[3] : (byte)255);
         }
@@ -100,7 +100,7 @@ namespace SickDev.CommandSystem.Unity {
 
             ArgumentType[] values = new ArgumentType[array.Length];
             for(int i = 0; i < array.Length; i++)
-                values[i] = (ArgumentType)Convert.ChangeType(array[i].Trim(), typeof(ObjectType));
+                values[i] = (ArgumentType)Convert.ChangeType(array[i].Trim(), typeof(ArgumentType));
             return values;
         }
 
