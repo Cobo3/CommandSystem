@@ -276,14 +276,16 @@ namespace SickDev.CommandSystem.Unity {
         }
 
         protected void Handheld() {
+#if UNITY_ANDROID || UNITY_IOS
             if(UnityEngine.Application.platform != RuntimePlatform.Android && UnityEngine.Application.platform != RuntimePlatform.IPhonePlayer)
                 return;
-
+            
             Type type = typeof(Handheld);
             CommandsBuilder builder = new CommandsBuilder(type);
             builder.useClassName = true;
             builder.methodsSettings.AddExceptions("PlayFullScreenMovie");
             manager.Add(builder.Build());
+#endif
         }
 
         protected void Hash128() {
