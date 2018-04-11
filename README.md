@@ -155,7 +155,7 @@ In order to prevent AmbiguousCommandCallException from being thrown, one can and
 
 Examples:
 - CommandName (int)2 --> Finds an overload that has one integer argument.
-- CommandName (float)2 (string)3 --> Finds an overload that has a float and a string parameter.
+- CommandName (float[])2 (string)3 --> Finds an overload that has a float array and a string parameter.
 - CommandName 2 (ExampleCast)"parameter with spaces" "another parameter with spaces" --> Three arguments, specifying only that the second one should be cast to ExampleCast type.
 
 #### The Parser Attribute
