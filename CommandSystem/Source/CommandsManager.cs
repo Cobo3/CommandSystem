@@ -27,16 +27,20 @@ namespace SickDev.CommandSystem {
         public CommandsManager(Configuration configuration) {
             this.configuration = configuration;
             finder = new ReflectionFinder(configuration);
-            parser = new ArgumentsParser(finder);
+            parser = new ArgumentsParser(finder, configuration);
             loader = new CommandAttributeLoader(finder);
         }
 
         public void LoadCommands() {
-            Thread thread = new Thread(LoadThreaded);
+            if(!configuration.allowThreading) {
+                LoadCommandsInternal();
+                return;
+            }
+            Thread thread = new Thread(LoadCommandsInternal);
             thread.Start();
         }
 
-        void LoadThreaded() {
+        void LoadCommandsInternal() {
             Add(loader.LoadCommands());
         }
 

@@ -11,9 +11,12 @@ namespace SickDev.CommandSystem {
 
         public bool dataLoaded { get; private set; }
 
-        public ArgumentsParser(ReflectionFinder finder) {
+        public ArgumentsParser(ReflectionFinder finder, Configuration configuration) {
             this.finder = finder;
-            new Thread(Load).Start();
+            if(configuration.allowThreading)
+                new Thread(Load).Start();
+            else
+                Load();
         }
 
         //Finds every Parser method and adds it to the array

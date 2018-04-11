@@ -3,14 +3,18 @@
 namespace SickDev.CommandSystem{
     public class Configuration{
         List<string> _registeredAssemblies;
+
+        public bool allowThreading { get; private set; }
+
         public string[] registeredAssemblies{get { return _registeredAssemblies.ToArray(); }}
 
-        public Configuration() {
+        public Configuration(bool allowThreading) {
+            this.allowThreading = allowThreading;
             _registeredAssemblies = new List<string>();
             RegisterAssembly("CommandSystem");
         }
 
-        public Configuration(params string[] assembliesToRegister):this() {
+        public Configuration(bool allowThreading, params string[] assembliesToRegister):this(allowThreading) {
             for(int i = 0; i < assembliesToRegister.Length; i++)
                 RegisterAssembly(assembliesToRegister[i]);
         }
