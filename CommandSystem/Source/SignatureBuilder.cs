@@ -79,7 +79,7 @@ namespace SickDev.CommandSystem {
             }
         }
 
-        static string TypeToString(Type type) {
+        public static string TypeToString(Type type) {
             StringBuilder builder = new StringBuilder();
 
             if (aliases.ContainsKey(type))
