@@ -75,12 +75,14 @@ namespace SickDev.CommandSystem {
             List<CastInfo> typesInfo = new List<CastInfo>();
             for(int i = 0; i < allTypes.Length; i++) {
                 Type type = allTypes[i];
-                if(SignatureBuilder.aliases.ContainsKey(type)) {
-                    string alias = SignatureBuilder.aliases[type];
-                    typesInfo.Add(new CastInfo(type, alias, alias));
-                }
-                else
-                    typesInfo.Add(new CastInfo(type, type.Name, type.FullName));
+                string name = type.Name;
+                string fullName = type.FullName;
+                if(SignatureBuilder.aliases.ContainsKey(type))
+                    name = fullName = SignatureBuilder.aliases[type];
+
+                typesInfo.Add(new CastInfo(type, name, fullName));
+                if (type != typeof(TypedReference) && !type.IsByRef)
+                    typesInfo.Add(new CastInfo(type.MakeArrayType(), name + "[]", fullName + "[]"));
             }
             return typesInfo.ToArray();
         }
