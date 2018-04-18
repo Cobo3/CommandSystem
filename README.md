@@ -39,7 +39,7 @@ The Configuration class contains a constructor overload for registering assembli
 Registered assemblies need only to contain the name of the assembly.
 
 ### Create and add Commands
-Commands can be created in three differet ways.
+Commands can be created in three different ways.
 - Manually
 - Using the CommandAttribute
 - Using the CommandsBuilder
