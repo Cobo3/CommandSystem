@@ -52,7 +52,7 @@ Commands can be created in three different ways.
 
 #### Manually
 Manually adding commands can prove useful when all you need is flexibility. However, it is tedious for large amounts or commands or when you just need a quick solution.
-It is the only of the three methods that allows for instance methods and the useage of delegates and MethodInfo. It is limited, however, in that it does not allow to directly acces properties or variables. To do that, it is advised to create a wraper delegate.
+It is the only of the three methods that allows for instance methods and the usage of delegates and MethodInfo. It is limited, however, in that it does not allow to directly access properties or variables. To do that, it is advised to create a wrapper delegate.
 
 Using this method, you first need to create the command and then add it to the CommandsManager. A command can be created using one of the different CommandType classes, depending on your needs. CommandTypes are separated between ActionCommands and FuncCommands, just like .NET delegates.
 
@@ -105,7 +105,7 @@ static void ExampleCommandAttribute(){
 Assemblies containing methods with the Command attribute need to be registered first.
 
 #### Using the Commands Builder
-Using the CommandsBuilder is the perfect solution when you need to mass generate commands. It uses reflection to get members from a Type and converting them into commands. The downside is that it only work with instance members.
+Using the CommandsBuilder is the perfect solution when you need to mass generate commands. It uses reflection to get members from a Type and converting them into commands. The downside is that it only works with static members.
 
 For a full example on how to use it, see the [BuiltInCommandsBuilder.cs](CommandSystem-Unity/BuiltInCommandsBuilder.cs) file.
 
