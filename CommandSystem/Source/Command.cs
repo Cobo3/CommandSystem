@@ -52,11 +52,15 @@ namespace SickDev.CommandSystem {
         }
 
         public bool IsOverloadOf(ParsedCommand parsedCommand) {
-            return string.Equals(name, parsedCommand.command, StringComparison.OrdinalIgnoreCase);
+            return IsOverloadOf(parsedCommand.command);
         }
 
         public bool IsOverloadOf(Command command) {
-            return string.Equals(name, command.name);
+            return IsOverloadOf(command.name);
+        }
+
+        public bool IsOverloadOf(string commandName) {
+            return string.Equals(name, commandName, StringComparison.OrdinalIgnoreCase);
         }
 
         public object Execute(object[] args) {

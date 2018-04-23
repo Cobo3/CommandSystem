@@ -38,7 +38,7 @@ namespace SickDev.CommandSystem {
                 }
             }
             dataLoaded = true;
-            CommandsManager.SendMessage("Loaded : " + parsers.Count + " parsers:\n" + string.Join("\n", parsers.ToList().ConvertAll(x => x.Key.Namespace+"."+SignatureBuilder.TypeToString(x.Key)).ToArray()));
+            CommandsManager.SendMessage("Loaded " + parsers.Count + " parsers:\n" + string.Join("\n", parsers.ToList().ConvertAll(x => x.Key.Namespace+"."+SignatureBuilder.TypeToString(x.Key)).ToArray()));
         }
 
         public object Parse(ParsedArgument argument, Type type) {
