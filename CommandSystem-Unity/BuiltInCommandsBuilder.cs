@@ -218,10 +218,17 @@ namespace SickDev.CommandSystem.Unity {
             builder.methodsSettings.AddExceptions("Assert", "AssertFormat", "DrawLine", "DrawRay");
             builder.propertiesSettings.AddExceptions("logger");
             manager.Add(builder.Build());
-            manager.Add(new ActionCommand<LogType>(value => UnityEngine.Debug.unityLogger.filterLogType = value) { alias = "filterLogType", useClassName = true });
-            manager.Add(new ActionCommand<bool>(value => UnityEngine.Debug.unityLogger.logEnabled = value) { alias = "logEnabled", useClassName = true });
-            manager.Add(new FuncCommand<LogType>(() => UnityEngine.Debug.unityLogger.filterLogType) { alias = "filterLogType", useClassName = true });
-            manager.Add(new FuncCommand<bool>(() => UnityEngine.Debug.unityLogger.logEnabled) { alias = "logEnabled", useClassName = true });
+            ILogger logger = UnityEngine.Debug.
+#if UNITY_2017_1_OR_NEWER
+                unityLogger
+#else
+                logger
+#endif
+                ;
+            manager.Add(new ActionCommand<LogType>(value => logger.filterLogType = value) { alias = "filterLogType", useClassName = true });
+            manager.Add(new ActionCommand<bool>(value => logger.logEnabled = value) { alias = "logEnabled", useClassName = true });
+            manager.Add(new FuncCommand<LogType>(() => logger.filterLogType) { alias = "filterLogType", useClassName = true });
+            manager.Add(new FuncCommand<bool>(() => logger.logEnabled) { alias = "logEnabled", useClassName = true });
         }
 
         protected void PlayerConnection() {
