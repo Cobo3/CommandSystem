@@ -63,7 +63,7 @@ namespace SickDev.CommandSystem.Unity {
             Action<bool, bool> broadcastMethod = (enableMicrophone, enableCamera) => {
                 UnityEngine.Apple.ReplayKit.ReplayKit.StartBroadcasting(broadcastCallback, enableMicrophone, enableCamera);
             };
-            manager.Add(new ActionCommand<bool, bool>(broadcastMethod) { useClassName = true, alias = "StartBroadcasting" });
+            manager.Add(new ActionCommand<bool, bool>(broadcastMethod) { alias = "StartBroadcasting", className = type.Name });
 #endif
         }
 
@@ -102,26 +102,26 @@ namespace SickDev.CommandSystem.Unity {
                 AudioConfiguration config = UnityEngine.AudioSettings.GetConfiguration();
                 config.dspBufferSize = value;
                 UnityEngine.AudioSettings.Reset(config);
-            }) { alias = "dspBufferSize", useClassName = true });
+            }) { alias = "dspBufferSize", className = type.Name });
             manager.Add(new ActionCommand<int>(value => {
                 AudioConfiguration config = UnityEngine.AudioSettings.GetConfiguration();
                 config.numRealVoices = value;
                 UnityEngine.AudioSettings.Reset(config);
-            }) { alias = "numRealVoices", useClassName = true });
+            }) { alias = "numRealVoices", className = type.Name });
             manager.Add(new ActionCommand<int>(value => {
                 AudioConfiguration config = UnityEngine.AudioSettings.GetConfiguration();
                 config.numVirtualVoices = value;
                 UnityEngine.AudioSettings.Reset(config);
-            }) { alias = "numVirtualVoices", useClassName = true });
+            }) { alias = "numVirtualVoices", className = type.Name });
             manager.Add(new FuncCommand<int>(() => {
                 return UnityEngine.AudioSettings.GetConfiguration().dspBufferSize;
-            }) { alias = "dspBufferSize", useClassName = true });
+            }) { alias = "dspBufferSize", className = type.Name });
             manager.Add(new FuncCommand<int>(() => {
                 return UnityEngine.AudioSettings.GetConfiguration().numRealVoices;
-            }) { alias = "numRealVoices", useClassName = true });
+            }) { alias = "numRealVoices", className = type.Name });
             manager.Add(new FuncCommand<int>(() => {
                 return UnityEngine.AudioSettings.GetConfiguration().numVirtualVoices;
-            }) { alias = "numVirtualVoices", useClassName = true });
+            }) { alias = "numVirtualVoices", className = type.Name });
         }
 
         protected void AudioSource() {
@@ -167,7 +167,7 @@ namespace SickDev.CommandSystem.Unity {
                 float h, s, v;
                 UnityEngine.Color.RGBToHSV(color, out h, out s, out v);
                 return string.Format("H:{0} S:{1} V:{2}", h, s, v);
-            }) { alias = "RGBToHSV", useClassName = true });
+            }) { alias = "RGBToHSV", className = type.Name });
         }
 
         protected void Color32() {
@@ -187,7 +187,7 @@ namespace SickDev.CommandSystem.Unity {
                 Color color = new Color(-1, -1, -1, -1);
                 UnityEngine.ColorUtility.TryParseHtmlString(htmlColor, out color);
                 return color;
-            }) { alias = "ParseHtmlString", useClassName = true });
+            }) { alias = "ParseHtmlString", className = type.Name });
         }
 
         protected void CrashReport() {
@@ -225,10 +225,10 @@ namespace SickDev.CommandSystem.Unity {
                 logger
 #endif
                 ;
-            manager.Add(new ActionCommand<LogType>(value => logger.filterLogType = value) { alias = "filterLogType", useClassName = true });
-            manager.Add(new ActionCommand<bool>(value => logger.logEnabled = value) { alias = "logEnabled", useClassName = true });
-            manager.Add(new FuncCommand<LogType>(() => logger.filterLogType) { alias = "filterLogType", useClassName = true });
-            manager.Add(new FuncCommand<bool>(() => logger.logEnabled) { alias = "logEnabled", useClassName = true });
+            manager.Add(new ActionCommand<LogType>(value => logger.filterLogType = value) { alias = "filterLogType", className = type.Name });
+            manager.Add(new ActionCommand<bool>(value => logger.logEnabled = value) { alias = "logEnabled", className = type.Name });
+            manager.Add(new FuncCommand<LogType>(() => logger.filterLogType) { alias = "filterLogType", className = type.Name });
+            manager.Add(new FuncCommand<bool>(() => logger.logEnabled) { alias = "logEnabled", className = type.Name });
         }
 
         protected void PlayerConnection() {
@@ -250,7 +250,7 @@ namespace SickDev.CommandSystem.Unity {
                 Display display = UnityEngine.Display.displays[index];
                 return string.Format("Active: {0}\tRenderResolution: {1}x{2}\tSystemResolution: {3}x{4}",
                     display.active, display.renderingWidth, display.renderingHeight, display.systemWidth, display.systemHeight);
-            }) { alias = "GetDisplayInfo", useClassName = true });
+            }) { alias = "GetDisplayInfo", className = type.Name });
         }
 
         protected void DynamicGI() {
@@ -325,12 +325,12 @@ namespace SickDev.CommandSystem.Unity {
             CommandsBuilder builder = new CommandsBuilder(type);
             builder.useClassName = true;
             manager.Add(builder.Build());
-            manager.Add(new FuncCommand<bool>(() => UnityEngine.Input.compass.enabled) { alias = "enabled", useClassName = true });
-            manager.Add(new FuncCommand<float>(() => UnityEngine.Input.compass.headingAccuracy) { alias = "headingAccuracy", useClassName = true });
-            manager.Add(new FuncCommand<float>(() => UnityEngine.Input.compass.magneticHeading) { alias = "magneticHeading", useClassName = true });
-            manager.Add(new FuncCommand<Vector3>(() => UnityEngine.Input.compass.rawVector) { alias = "rawVector", useClassName = true });
-            manager.Add(new FuncCommand<double>(() => UnityEngine.Input.compass.timestamp) { alias = "timestamp", useClassName = true });
-            manager.Add(new FuncCommand<float>(() => UnityEngine.Input.compass.trueHeading) { alias = "trueHeading", useClassName = true });
+            manager.Add(new FuncCommand<bool>(() => UnityEngine.Input.compass.enabled) { alias = "enabled", className = type.Name });
+            manager.Add(new FuncCommand<float>(() => UnityEngine.Input.compass.headingAccuracy) { alias = "headingAccuracy", className = type.Name });
+            manager.Add(new FuncCommand<float>(() => UnityEngine.Input.compass.magneticHeading) { alias = "magneticHeading", className = type.Name });
+            manager.Add(new FuncCommand<Vector3>(() => UnityEngine.Input.compass.rawVector) { alias = "rawVector", className = type.Name });
+            manager.Add(new FuncCommand<double>(() => UnityEngine.Input.compass.timestamp) { alias = "timestamp", className = type.Name });
+            manager.Add(new FuncCommand<float>(() => UnityEngine.Input.compass.trueHeading) { alias = "trueHeading", className = type.Name });
         }
 
         protected void Gyroscope() {
@@ -338,29 +338,29 @@ namespace SickDev.CommandSystem.Unity {
             CommandsBuilder builder = new CommandsBuilder(type);
             builder.useClassName = true;
             manager.Add(builder.Build());
-            manager.Add(new FuncCommand<bool>(() => UnityEngine.Input.gyro.enabled) { alias = "enabled", useClassName = true });
-            manager.Add(new FuncCommand<Quaternion>(() => UnityEngine.Input.gyro.attitude) { alias = "attitude", useClassName = true });
-            manager.Add(new FuncCommand<Vector3>(() => UnityEngine.Input.gyro.gravity) { alias = "gravity", useClassName = true });
-            manager.Add(new FuncCommand<Vector3>(() => UnityEngine.Input.gyro.rotationRate) { alias = "rotationRate", useClassName = true });
-            manager.Add(new FuncCommand<Vector3>(() => UnityEngine.Input.gyro.rotationRateUnbiased) { alias = "rotationRateUnbiased", useClassName = true });
-            manager.Add(new FuncCommand<Vector3>(() => UnityEngine.Input.gyro.userAcceleration) { alias = "userAcceleration", useClassName = true });
-            manager.Add(new FuncCommand<float>(() => UnityEngine.Input.gyro.updateInterval) { alias = "updateInterval", useClassName = true });
+            manager.Add(new FuncCommand<bool>(() => UnityEngine.Input.gyro.enabled) { alias = "enabled", className = type.Name });
+            manager.Add(new FuncCommand<Quaternion>(() => UnityEngine.Input.gyro.attitude) { alias = "attitude", className = type.Name });
+            manager.Add(new FuncCommand<Vector3>(() => UnityEngine.Input.gyro.gravity) { alias = "gravity", className = type.Name });
+            manager.Add(new FuncCommand<Vector3>(() => UnityEngine.Input.gyro.rotationRate) { alias = "rotationRate", className = type.Name });
+            manager.Add(new FuncCommand<Vector3>(() => UnityEngine.Input.gyro.rotationRateUnbiased) { alias = "rotationRateUnbiased", className = type.Name });
+            manager.Add(new FuncCommand<Vector3>(() => UnityEngine.Input.gyro.userAcceleration) { alias = "userAcceleration", className = type.Name });
+            manager.Add(new FuncCommand<float>(() => UnityEngine.Input.gyro.updateInterval) { alias = "updateInterval", className = type.Name });
         }
-        
+
         protected void LocationService() {
 #if COMMAND_SYSTEM_USE_LOCATION
             Type type = typeof(LocationService);
             CommandsBuilder builder = new CommandsBuilder(type);
             builder.useClassName = true;
             manager.Add(builder.Build());
-            manager.Add(new FuncCommand<bool>(() => UnityEngine.Input.location.isEnabledByUser) { alias = "isEnabledByUser", useClassName = true });
-            manager.Add(new FuncCommand<LocationServiceStatus>(() => UnityEngine.Input.location.status) { alias = "status", useClassName = true });
-            manager.Add(new FuncCommand<float>(() => UnityEngine.Input.location.lastData.altitude) { alias = "altitude", useClassName = true });
-            manager.Add(new FuncCommand<float>(() => UnityEngine.Input.location.lastData.horizontalAccuracy) { alias = "horizontalAccuracy", useClassName = true });
-            manager.Add(new FuncCommand<float>(() => UnityEngine.Input.location.lastData.latitude) { alias = "latitude", useClassName = true });
-            manager.Add(new FuncCommand<float>(() => UnityEngine.Input.location.lastData.longitude) { alias = "longitude", useClassName = true });
-            manager.Add(new FuncCommand<float>(() => UnityEngine.Input.location.lastData.verticalAccuracy) { alias = "verticalAccuracy", useClassName = true });
-            manager.Add(new FuncCommand<double>(() => UnityEngine.Input.location.lastData.timestamp) { alias = "timestamp", useClassName = true });
+            manager.Add(new FuncCommand<bool>(() => UnityEngine.Input.location.isEnabledByUser) { alias = "isEnabledByUser", className = type.Name });
+            manager.Add(new FuncCommand<LocationServiceStatus>(() => UnityEngine.Input.location.status) { alias = "status", className = type.Name });
+            manager.Add(new FuncCommand<float>(() => UnityEngine.Input.location.lastData.altitude) { alias = "altitude", className = type.Name });
+            manager.Add(new FuncCommand<float>(() => UnityEngine.Input.location.lastData.horizontalAccuracy) { alias = "horizontalAccuracy", className = type.Name });
+            manager.Add(new FuncCommand<float>(() => UnityEngine.Input.location.lastData.latitude) { alias = "latitude", className = type.Name });
+            manager.Add(new FuncCommand<float>(() => UnityEngine.Input.location.lastData.longitude) { alias = "longitude", className = type.Name });
+            manager.Add(new FuncCommand<float>(() => UnityEngine.Input.location.lastData.verticalAccuracy) { alias = "verticalAccuracy", className = type.Name });
+            manager.Add(new FuncCommand<double>(() => UnityEngine.Input.location.lastData.timestamp) { alias = "timestamp", className = type.Name });
 #endif
         }
 
@@ -440,7 +440,7 @@ namespace SickDev.CommandSystem.Unity {
             builder.methodsSettings.AddExceptions("SmoothDamp", "SmoothDampAngle");
             manager.Add(builder.Build());
         }
-        
+
         protected void Microphone() {
 #if COMMAND_SYSTEM_USE_MICROPHONE
             Type type = typeof(Microphone);
@@ -538,7 +538,7 @@ namespace SickDev.CommandSystem.Unity {
             CommandsBuilder builder = new CommandsBuilder(type);
             builder.useClassName = true;
             manager.Add(builder.Build());
-            manager.Add(new ActionCommand<string, bool>((key, value) => UnityEngine.PlayerPrefs.SetInt(key, value ? 1 : 0)){ alias = "SetBool", className = type.Name });
+            manager.Add(new ActionCommand<string, bool>((key, value) => UnityEngine.PlayerPrefs.SetInt(key, value ? 1 : 0)) { alias = "SetBool", className = type.Name });
             manager.Add(new FuncCommand<string, bool>(key => UnityEngine.PlayerPrefs.GetInt(key) != 0) { alias = "SetBool", className = type.Name });
             manager.Add(new FuncCommand<string, bool, bool>((key, defaultValue) => UnityEngine.PlayerPrefs.GetInt(key, defaultValue ? 1 : 0) != 0) { alias = "SetBool", className = type.Name });
         }
@@ -584,7 +584,7 @@ namespace SickDev.CommandSystem.Unity {
             builder.methodsSettings.AddExceptions(type.GetMethod("ColorHSV", new Type[] { typeof(float), typeof(float), typeof(float), typeof(float), typeof(float), typeof(float), typeof(float), typeof(float) }));
             builder.methodsSettings.AddExceptions(type.GetMethod("Range", new Type[] { typeof(int), typeof(int) }));
             manager.Add(builder.Build());
-            manager.Add(new FuncCommand<int, int, int>((min, max) => UnityEngine.Random.Range(min, max)) { alias = "RangeInt", useClassName = true });
+            manager.Add(new FuncCommand<int, int, int>((min, max) => UnityEngine.Random.Range(min, max)) { alias = "RangeInt", className = type.Name });
         }
 
         protected void Rect() {
@@ -644,9 +644,9 @@ namespace SickDev.CommandSystem.Unity {
             builder.methodsSettings.AddExceptions("CreateScene", "GetActiveScene", "GetSceneAt", "GetSceneByBuildIndex", "GetSceneByName",
                 "GetSceneByPath", "LoadSceneAsync", "UnloadSceneAsync");
             manager.Add(builder.Build());
-            manager.Add(new FuncCommand<string>(() => UnityEngine.SceneManagement.SceneManager.GetActiveScene().name) { alias = "GetActiveScene", useClassName = true });
-            manager.Add(new FuncCommand<int, string>((index) => UnityEngine.SceneManagement.SceneManager.GetSceneAt(index).name) { alias = "GetSceneAt", useClassName = true });
-            manager.Add(new FuncCommand<int, string>((buildIndex) => UnityEngine.SceneManagement.SceneManager.GetSceneByBuildIndex(buildIndex).name) { alias = "GetSceneByBuildIndex", useClassName = true });
+            manager.Add(new FuncCommand<string>(() => UnityEngine.SceneManagement.SceneManager.GetActiveScene().name) { alias = "GetActiveScene", className = type.Name });
+            manager.Add(new FuncCommand<int, string>((index) => UnityEngine.SceneManagement.SceneManager.GetSceneAt(index).name) { alias = "GetSceneAt", className = type.Name });
+            manager.Add(new FuncCommand<int, string>((buildIndex) => UnityEngine.SceneManagement.SceneManager.GetSceneByBuildIndex(buildIndex).name) { alias = "GetSceneByBuildIndex", className = type.Name });
         }
 
         protected void SceneUtility() {
