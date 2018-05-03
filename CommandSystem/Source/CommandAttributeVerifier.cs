@@ -23,7 +23,7 @@ namespace SickDev.CommandSystem {
             command.alias = attribute.alias;
             command.description = attribute.description;
             command.className = attribute.className;
-            command.useClassName = attribute.useClassName;
+            command.useClassName = attribute.useClassName || !string.IsNullOrEmpty(attribute.className);
             return command;
         }
     }
