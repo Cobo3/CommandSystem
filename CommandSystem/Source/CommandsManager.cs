@@ -51,7 +51,7 @@ namespace SickDev.CommandSystem {
 
         public void Add(Command command) {
             lock(block) {
-                if (IsCommandAdded(command)) {
+                if (!IsCommandAdded(command)) {
                     commands.Add(command);
                     if (onCommandAdded != null)
                         onCommandAdded(command);
