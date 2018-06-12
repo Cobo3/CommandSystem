@@ -10,10 +10,10 @@ namespace SickDev.CommandSystem {
         public readonly bool isAnonymous;
 
         string _className;
-        string _description;
 
         public bool useClassName { get; set; }
         public string alias { get; set; }
+        public string description { get; set; }
 
         public bool hasReturnValue { get { return method.ReturnType != typeof(void); } }
         public string name {
@@ -24,11 +24,6 @@ namespace SickDev.CommandSystem {
                 name += string.IsNullOrEmpty(alias) ? method.Name : alias;
                 return name;
             }
-        }
-
-        public string description {
-            get { return _description; }
-            set { _description = value; }
         }
 
         public string className {
