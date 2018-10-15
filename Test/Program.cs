@@ -22,6 +22,7 @@ namespace Test {
             manager.Add(command = new FuncCommand<float[], float>(Max));
             manager.Add(command = new FuncCommand<int[], float>(Max));
             Console.WriteLine(manager.Execute("Max \"(int[])2 3\""));
+            Console.WriteLine(manager.Execute("TestNestedQuotes \"'Nested' quotes DO work\""));
         }
 
         public static float Max(float[] numbers) {
@@ -49,6 +50,11 @@ namespace Test {
 
         public static int Max(bool a, bool b) {
             return 2;
+        }
+
+        [Command]
+        public static string TestNestedQuotes(string text) {
+            return text;
         }
     }
 }

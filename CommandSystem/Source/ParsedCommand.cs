@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SickDev.CommandSystem {
     public class ParsedCommand {
@@ -28,6 +27,7 @@ namespace SickDev.CommandSystem {
             char? groupifier = null;
             string arg = string.Empty;
             for (int i = 0; i < stringArgs.Length; i++) {
+                //Args are separated by the separator character IF AND ONLY IF outside a group
                 if (stringArgs[i] == separator && groupifier == null) {
                     if(!string.IsNullOrEmpty(arg)) {
                         listArgs.Add(arg);
@@ -40,17 +40,25 @@ namespace SickDev.CommandSystem {
                 for (int j = 0; j < groupifiers.Length; j++) {
                     if (stringArgs[i] == groupifiers[j]) {
                         isGroupifier = true;
-                        if (groupifier == null)
-                            groupifier = groupifiers[j];
-                        else if (groupifier == stringArgs[i]) {
-                            listArgs.Add(arg);
-                            arg = string.Empty;
-                            groupifier = null;
-                        }
+                        break;
                     }
                 }
 
-                if (!isGroupifier)
+                if (isGroupifier) {
+                    //Open group
+                    if (groupifier == null)
+                        groupifier = stringArgs[i];
+                    //Close group
+                    else if (groupifier == stringArgs[i]) {
+                        listArgs.Add(arg);
+                        arg = string.Empty;
+                        groupifier = null;
+                    }
+                    //Ignore nested groupifiers
+                    else
+                       arg += stringArgs[i];
+                }
+                else
                     arg += stringArgs[i];
             }
 
