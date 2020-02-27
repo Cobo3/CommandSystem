@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SickDev.CommandSystem {
-    static class BuiltInCommands {
+namespace SickDev.CommandSystem 
+{
+    static class BuiltInCommands 
+    {
         [Command]
-        static string GetEnumValues(string enumName) {
+        static string GetEnumValues(string enumName)
+        {
             string text = string.Empty;
             Type[] types = ReflectionFinder.enumTypes;
             List<Type> matches = new List<Type>();
@@ -12,7 +15,8 @@ namespace SickDev.CommandSystem {
                 if(types[i].Name.Equals(enumName, StringComparison.OrdinalIgnoreCase))
                     matches.Add(types[i]);
 
-            for(int i = 0; i < matches.Count; i++) {
+            for(int i = 0; i < matches.Count; i++) 
+            {
                 string[] values = Enum.GetNames(matches[i]);
                 text += matches[i].FullName.Replace('+','.')+":\n";
                 for(int j = 0; j < values.Length; j++)

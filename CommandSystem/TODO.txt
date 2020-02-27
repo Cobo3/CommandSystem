@@ -6,3 +6,4 @@
 - Remove log static methods
 - Load/Unload commands at runtime from CommandsBuilder
 - Add support for instance elements
+- Make it survive recompilation

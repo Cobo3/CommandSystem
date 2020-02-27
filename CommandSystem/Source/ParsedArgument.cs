@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SickDev.CommandSystem {
-    public class ParsedArgument {
+namespace SickDev.CommandSystem 
+{
+    public class ParsedArgument 
+    {
         static CastInfo[] _castInfo;
-        static CastInfo[] castInfo {
-            get {
+        static CastInfo[] castInfo 
+        {
+            get 
+            {
                 if(_castInfo == null)
                     _castInfo = CreateCastInfo();
                 return _castInfo;
@@ -18,9 +22,10 @@ namespace SickDev.CommandSystem {
         public string argument { get; private set; }
         public Type type { get; private set; }
 
-        public bool isTypeSpecified { get { return type != null; } }
+        public bool isTypeSpecified => type != null;
 
-        public ParsedArgument(string raw) {
+        public ParsedArgument(string raw) 
+        {
             this.raw = raw;
 
             if(raw.StartsWith("("))
@@ -29,7 +34,8 @@ namespace SickDev.CommandSystem {
                 ParseSimple();
         }
 
-        void ParseComplex() {
+        void ParseComplex() 
+        {
             int index = raw.IndexOf(")");
             argument = raw.Substring(index + 1);
             string cast = raw.Substring(1, index-1);
@@ -38,7 +44,8 @@ namespace SickDev.CommandSystem {
             type = GetCastType(cast);
         }
 
-        Type GetCastType(string cast) {
+        Type GetCastType(string cast) 
+        {
             CachedCast cachedCast = cachedCasts[cast];
 
             if(cachedCast.nameMatches.Count == 0)
@@ -48,15 +55,19 @@ namespace SickDev.CommandSystem {
             return cachedCast.nameMatches[0].type;
         }
 
-        void CreateCachedCast(string cast) {
+        void CreateCachedCast(string cast)
+        {
             CachedCast cachedCast = new CachedCast(cast);
             for(int i = 0; i < castInfo.Length; i++)
                 if(castInfo[i].name.Equals(cast, StringComparison.OrdinalIgnoreCase))
                     cachedCast.nameMatches.Add(castInfo[i]);
 
-            if(cachedCast.nameMatches.Count == 0) {
-                for(int i = 0; i < castInfo.Length; i++) {
-                    if(castInfo[i].fullName.Equals(cast, StringComparison.OrdinalIgnoreCase)) {
+            if(cachedCast.nameMatches.Count == 0) 
+            {
+                for(int i = 0; i < castInfo.Length; i++) 
+                {
+                    if(castInfo[i].fullName.Equals(cast, StringComparison.OrdinalIgnoreCase)) 
+                    {
                         cachedCast.nameMatches.Add(castInfo[i]);
                         break;
                     }
@@ -65,15 +76,18 @@ namespace SickDev.CommandSystem {
             cachedCasts.Add(cast, cachedCast);
         }
 
-        void ParseSimple() {
+        void ParseSimple() 
+        {
             type = null;
             argument = raw;
         }
 
-        static CastInfo[] CreateCastInfo() {
+        static CastInfo[] CreateCastInfo() 
+        {
             Type[] allTypes = ReflectionFinder.allTypes;
             List<CastInfo> typesInfo = new List<CastInfo>();
-            for(int i = 0; i < allTypes.Length; i++) {
+            for(int i = 0; i < allTypes.Length; i++) 
+            {
                 Type type = allTypes[i];
                 string name = type.Name;
                 string fullName = type.FullName;
@@ -87,23 +101,27 @@ namespace SickDev.CommandSystem {
             return typesInfo.ToArray();
         }
 
-        struct CastInfo {
+        struct CastInfo 
+        {
             public readonly Type type;
             public readonly string name;
             public readonly string fullName;
 
-            public CastInfo(Type type, string name, string fullName) {
+            public CastInfo(Type type, string name, string fullName)
+            {
                 this.type = type;
                 this.name = name;
                 this.fullName = fullName;
             }
         }
 
-        struct CachedCast {
+        struct CachedCast
+        {
             public readonly string cast;
             public List<CastInfo> nameMatches;
 
-            public CachedCast(string cast) {
+            public CachedCast(string cast) 
+            {
                 this.cast = cast;
                 nameMatches = new List<CastInfo>();
             }

@@ -3,8 +3,10 @@ using System.Linq;
 using System.Threading;
 using System.Collections.Generic;
 
-namespace SickDev.CommandSystem {
-    public class CommandsManager {
+namespace SickDev.CommandSystem 
+{
+    public class CommandsManager 
+    {
         public delegate void OnExceptionThrown(Exception exception);
         public delegate void OnMessage(string message);
         public delegate void OnCommandModified(Command command);
@@ -22,17 +24,20 @@ namespace SickDev.CommandSystem {
         public static event OnExceptionThrown onExceptionThrown;
         public static event OnMessage onMessage;
 
-        public bool allDataLoaded { get { return parser.dataLoaded; } }
+        public bool allDataLoaded => parser.dataLoaded;
 
-        public CommandsManager(Configuration configuration) {
+        public CommandsManager(Configuration configuration) 
+        {
             this.configuration = configuration;
             finder = new ReflectionFinder(configuration);
             parser = new ArgumentsParser(finder, configuration);
             loader = new CommandAttributeLoader(finder);
         }
 
-        public void LoadCommands() {
-            if(!configuration.allowThreading) {
+        public void LoadCommands() 
+        {
+            if(!configuration.allowThreading) 
+            {
                 LoadCommandsInternal();
                 return;
             }
@@ -40,18 +45,20 @@ namespace SickDev.CommandSystem {
             thread.Start();
         }
 
-        void LoadCommandsInternal() {
-            Add(loader.LoadCommands());
-        }
+        void LoadCommandsInternal() => Add(loader.LoadCommands());
 
-        public void Add(Command[] commands) {
+        public void Add(Command[] commands) 
+        {
             for (int i = 0; i < commands.Length; i++)
                 Add(commands[i]);
         }
 
-        public void Add(Command command) {
-            lock(block) {
-                if (!IsCommandAdded(command)) {
+        public void Add(Command command) 
+        {
+            lock(block) 
+            {
+                if (!IsCommandAdded(command)) 
+                {
                     commands.Add(command);
                     if (onCommandAdded != null)
                         onCommandAdded(command);
@@ -59,35 +66,31 @@ namespace SickDev.CommandSystem {
             }
         }
 
-        public void Remove(Command[] commands) {
+        public void Remove(Command[] commands) 
+        {
             for(int i = 0; i < commands.Length; i++)
                 Remove(commands[i]);
         }
 
-        public void Remove(Command command) {
-            RemoveInternal(x => command.Equals(x));
-        }
+        public void Remove(Command command) => RemoveInternal(x => command.Equals(x));
 
-        public void RemoveOverloads(Command[] commands) {
+        public void RemoveOverloads(Command[] commands) 
+        {
             for(int i = 0; i < commands.Length; i++)
                 RemoveOverloads(commands[i]);
         }
 
-        public void RemoveOverloads(Command command) {
-            RemoveInternal(x => command.IsOverloadOf(x));
-        }
+        public void RemoveOverloads(Command command) => RemoveInternal(x => command.IsOverloadOf(x));
 
-        public bool IsCommandAdded(Command command) {
-            return commands.Any(x => command.Equals(x));
-        }
+        public bool IsCommandAdded(Command command) => commands.Any(x => command.Equals(x));
+        public bool IsCommandOverloadAdded(Command command) => commands.Any(x => command.IsOverloadOf(x));
 
-        public bool IsCommandOverloadAdded(Command command) {
-            return commands.Any(x => command.IsOverloadOf(x));
-        }
-
-        void RemoveInternal(Predicate<Command> predicate) {
-            for(int i = commands.Count - 1; i >= 0; i--) {
-                if(predicate(commands[i])) {
+        void RemoveInternal(Predicate<Command> predicate) 
+        {
+            for(int i = commands.Count - 1; i >= 0; i--) 
+            {
+                if(predicate(commands[i])) 
+                {
                     Command removedCommand = commands[i];
                     commands.RemoveAt(i);
                     if(onCommandRemoved != null)
@@ -96,29 +99,26 @@ namespace SickDev.CommandSystem {
             }
         }
 
-        public Command[] GetCommands() {
-            return commands.ToArray();
-        }
+        public Command[] GetCommands() => commands.ToArray();
 
-        public object Execute(string text) {
-            return GetCommandExecuter(text).Execute();
-        }
+        public object Execute(string text) => GetCommandExecuter(text).Execute();
 
-        public CommandExecuter GetCommandExecuter(string text) {
+        public CommandExecuter GetCommandExecuter(string text) 
+        {
             ParsedCommand parsedCommand = new ParsedCommand(text);
             return GetCommandExecuter(parsedCommand);
         }
 
-        public CommandExecuter GetCommandExecuter(ParsedCommand parsedCommand) {
-            return new CommandExecuter(commands, parsedCommand, parser);            
-        }
+        public CommandExecuter GetCommandExecuter(ParsedCommand parsedCommand) =>  new CommandExecuter(commands, parsedCommand, parser);
 
-        public static void SendException(Exception exception) {
+        public static void SendException(Exception exception) 
+        {
             if (onExceptionThrown != null)
                 onExceptionThrown(exception);
         }
 
-        public static void SendMessage(string message) {
+        public static void SendMessage(string message) 
+        {
             if (onMessage != null)
                 onMessage(message);
         }

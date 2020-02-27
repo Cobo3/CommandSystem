@@ -4,12 +4,12 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Collections.Generic;
 
-namespace SickDev.CommandSystem {
-    public class CommandsBuilder {
+namespace SickDev.CommandSystem 
+{
+    public class CommandsBuilder 
+    {
         Type type;
         List<Command> commands = new List<Command>();
-
-        public Command[] lastBuiltCommands { get { return commands.ToArray(); } }
 
         public PropertyBuilderSettings fieldsSettings { get; set; }
         public PropertyBuilderSettings propertiesSettings { get; set; }
@@ -17,7 +17,10 @@ namespace SickDev.CommandSystem {
         public bool useClassName { get; set; }
         public string className { get; set; }
 
-        public CommandsBuilder(Type type) {
+        public Command[] lastBuiltCommands => commands.ToArray();
+
+        public CommandsBuilder(Type type) 
+        {
             this.type = type;
             className = type.Name;
             fieldsSettings = new PropertyBuilderSettings();
@@ -25,7 +28,8 @@ namespace SickDev.CommandSystem {
             methodsSettings = new MemberBuilderSettings();
         }
 
-        public Command[] Build() {
+        public Command[] Build() 
+        {
             commands.Clear();
             BuildFields();
             BuildProperties();
@@ -33,41 +37,50 @@ namespace SickDev.CommandSystem {
             return commands.ToArray();
         }
 
-        void BuildFields() {
+        void BuildFields() 
+        {
             FieldInfo[] fields = GetFields(fieldsSettings);
             MethodInfo setValueMethod = typeof(FieldInfo).GetMethod("SetValue", new Type[] { typeof(object), typeof(object) });
             MethodInfo getValueMethod = typeof(FieldInfo).GetMethod("GetValue", new Type[] { typeof(object) });
             ConstantExpression nullConstant = Expression.Constant(null);
 
-            for(int i = 0; i < fields.Length; i++) {
+            for(int i = 0; i < fields.Length; i++) 
+            {
                 if(fieldsSettings.accessorCreationBindings == AccessorCreationBindings.None)
                     continue;
 
                 ParameterExpression valueParameter = Expression.Parameter(fields[i].FieldType, "value");
                 ConstantExpression fieldConstant = Expression.Constant(fields[i]);
 
-                if(fieldsSettings.accessorCreationBindings.HasFlag(AccessorCreationBindings.Getter)) {
-                    try {
+                if(fieldsSettings.accessorCreationBindings.HasFlag(AccessorCreationBindings.Getter)) 
+                {
+                    try 
+                    {
                         MethodCallExpression methodCall = Expression.Call(fieldConstant, getValueMethod, nullConstant);
                         UnaryExpression convertExpression = Expression.Convert(methodCall, fields[i].FieldType);
                         Type delegateType = typeof(Func<>).MakeGenericType(fields[i].FieldType);
                         LambdaExpression lambdaExpression = Expression.Lambda(delegateType, convertExpression);
                         ProcessFieldLamdaExpression(fields[i], lambdaExpression);
                     }
-                    catch(Exception e) {
+                    catch(Exception e) 
+                    {
                         CommandsManager.SendException(new CommandBuildingException(type, fields[i], e));
                     }
                 }
-                if(fieldsSettings.accessorCreationBindings.HasFlag(AccessorCreationBindings.Setter)) {
-                    if(!fields[i].IsInitOnly && !fields[i].IsLiteral) {
-                        try {
+                if(fieldsSettings.accessorCreationBindings.HasFlag(AccessorCreationBindings.Setter)) 
+                {
+                    if(!fields[i].IsInitOnly && !fields[i].IsLiteral) 
+                    {
+                        try 
+                        {
                             UnaryExpression convertExpression = Expression.Convert(valueParameter, typeof(object));
                             MethodCallExpression methodCall = Expression.Call(fieldConstant, setValueMethod, nullConstant, convertExpression);
                             Type delegateType = typeof(Action<>).MakeGenericType(fields[i].FieldType);
                             LambdaExpression lambdaExpression = Expression.Lambda(delegateType, methodCall, valueParameter);
                             ProcessFieldLamdaExpression(fields[i], lambdaExpression);
                         }
-                        catch(Exception e) {
+                        catch(Exception e) 
+                        {
                             CommandsManager.SendException(new CommandBuildingException(type, fields[i], e));
                         }
                     }
@@ -75,9 +88,11 @@ namespace SickDev.CommandSystem {
             }
         }
 
-        void ProcessFieldLamdaExpression(FieldInfo field, LambdaExpression expression) {
+        void ProcessFieldLamdaExpression(FieldInfo field, LambdaExpression expression) 
+        {
             Delegate deleg = expression.Compile();
-            Command command = new Command(deleg) {
+            Command command = new Command(deleg) 
+            {
                 alias = field.Name,
                 className = className,
                 useClassName = useClassName
@@ -85,9 +100,11 @@ namespace SickDev.CommandSystem {
             commands.Add(command);
         }
 
-        void BuildProperties() {
+        void BuildProperties() 
+        {
             PropertyInfo[] properties = GetProperties(propertiesSettings);
-            for(int i = 0; i < properties.Length; i++) {
+            for(int i = 0; i < properties.Length; i++) 
+            {
                 if(propertiesSettings.accessorCreationBindings.HasFlag(AccessorCreationBindings.Getter) && properties[i].CanRead)
                     ProcessPropertyMethod(properties[i], properties[i].GetGetMethod(true));
                 if(propertiesSettings.accessorCreationBindings.HasFlag(AccessorCreationBindings.Setter) && properties[i].CanWrite)
@@ -95,58 +112,62 @@ namespace SickDev.CommandSystem {
             }
         }
 
-        void ProcessPropertyMethod(PropertyInfo property, MethodInfo method) {
-            try {
+        void ProcessPropertyMethod(PropertyInfo property, MethodInfo method) 
+        {
+            try 
+            {
                 if(method.IsPublic && propertiesSettings.accesModiferBindings.HasFlag(AccesModifierBindings.Public) ||
-                    !method.IsPublic && propertiesSettings.accesModiferBindings.HasFlag(AccesModifierBindings.NonPublic)) {
-                    commands.Add(new MethodInfoCommand(method) {
+                    !method.IsPublic && propertiesSettings.accesModiferBindings.HasFlag(AccesModifierBindings.NonPublic)) 
+                {
+                    commands.Add(new MethodInfoCommand(method) 
+                    {
                         className = className,
                         useClassName = useClassName
                     });
                 }
             }
-            catch(Exception e) {
+            catch(Exception e) 
+            {
                 CommandsManager.SendException(new CommandBuildingException(type, property, e));
             }
         }
 
-        void BuildMethods() {
+        void BuildMethods() 
+        {
             MethodInfo[] methods = GetMethods(methodsSettings);
-            for(int i = 0; i < methods.Length; i++) {
+            for(int i = 0; i < methods.Length; i++) 
+            {
                 if(methods[i].IsSpecialName)
                     continue;
-                try {
-                    commands.Add(new MethodInfoCommand(methods[i]) {
+                try 
+                {
+                    commands.Add(new MethodInfoCommand(methods[i]) 
+                    {
                         className = className,
                         useClassName = useClassName
                     });
                 }
-                catch(Exception e) {
+                catch(Exception e) 
+                {
                     CommandsManager.SendException(new CommandBuildingException(type, methods[i], e));
                 }
             }
         }
 
-        FieldInfo[] GetFields(MemberBuilderSettings settings) {
-            return GetMembersForSettings(settings, type.GetFields);
-        }
+        FieldInfo[] GetFields(MemberBuilderSettings settings) => GetMembersForSettings(settings, type.GetFields);
+        PropertyInfo[] GetProperties(MemberBuilderSettings settings) => GetMembersForSettings(settings, type.GetProperties);
+        MethodInfo[] GetMethods(MemberBuilderSettings settings) => GetMembersForSettings(settings, type.GetMethods);
 
-        PropertyInfo[] GetProperties(MemberBuilderSettings settings) {
-            return GetMembersForSettings(settings, type.GetProperties);
-        }
-
-        MethodInfo[] GetMethods(MemberBuilderSettings settings) {
-            return GetMembersForSettings(settings, type.GetMethods);
-        }
-
-        T[] GetMembersForSettings<T>(MemberBuilderSettings settings, Func<BindingFlags, T[]> callback) where T : MemberInfo {
+        T[] GetMembersForSettings<T>(MemberBuilderSettings settings, Func<BindingFlags, T[]> callback) where T : MemberInfo 
+        {
             BindingFlags flags = GetBindingFlagsForSettings(settings);
             List<T> members = callback(flags).ToList();
             members.RemoveAll(x => settings.IsException(x));
             return members.ToArray();
         }
 
-        BindingFlags GetBindingFlagsForSettings(MemberBuilderSettings settings) {
+        BindingFlags GetBindingFlagsForSettings(MemberBuilderSettings settings) 
+        {
             BindingFlags flags = BindingFlags.DeclaredOnly;
 
             if(settings.accesModiferBindings.HasFlag(AccesModifierBindings.Public))
@@ -162,7 +183,8 @@ namespace SickDev.CommandSystem {
             return flags;
         }
 
-        public class MemberBuilderSettings {
+        public class MemberBuilderSettings 
+        {
             List<string> nameExceptionsList = new List<string>();
             List<MemberInfo> memberExceptionsList = new List<MemberInfo>();
 
@@ -172,24 +194,28 @@ namespace SickDev.CommandSystem {
             public MemberInfo[] memberExceptions { get; private set; }
             public bool includeObsolete { get; set; }
 
-            public MemberBuilderSettings() {
+            public MemberBuilderSettings() 
+            {
                 staticBindings = StaticBindings.Static;
                 accesModiferBindings = AccesModifierBindings.Public;
                 nameExceptions = new string[0];
                 memberExceptions = new MemberInfo[0];
             }
 
-            public void AddExceptions(params string[] names) {
+            public void AddExceptions(params string[] names) 
+            {
                 nameExceptionsList.AddRange(names);
                 nameExceptions = nameExceptionsList.ToArray();
             }
 
-            public void AddExceptions(params MemberInfo[] members) {
+            public void AddExceptions(params MemberInfo[] members) 
+            {
                 memberExceptionsList.AddRange(members);
                 memberExceptions = memberExceptionsList.ToArray();
             }
 
-            public bool IsException(MemberInfo member) {
+            public bool IsException(MemberInfo member) 
+            {
                 for(int i = 0; i < memberExceptions.Length; i++)
                     if(member == memberExceptions[i])
                         return true;
@@ -205,12 +231,12 @@ namespace SickDev.CommandSystem {
             }
         }
 
-        public class PropertyBuilderSettings : MemberBuilderSettings {
+        public class PropertyBuilderSettings : MemberBuilderSettings 
+        {
             public AccessorCreationBindings accessorCreationBindings { get; set; }
 
-            public PropertyBuilderSettings() : base() {
+            public PropertyBuilderSettings() : base() =>
                 accessorCreationBindings = AccessorCreationBindings.Both;
-            }
         }
 
         [Flags]
@@ -221,9 +247,8 @@ namespace SickDev.CommandSystem {
         public enum AccesModifierBindings { None = 0, NonPublic = 1, Public = 2, All = Public | NonPublic }
     }
 
-    internal static class FlagsEnumExtensions {
-        public static bool HasFlag(this Enum variable, Enum value) {
-            return (Convert.ToUInt32(variable) & Convert.ToUInt32(value)) == Convert.ToUInt32(value);
-        }
+    internal static class FlagsEnumExtensions 
+    {
+        public static bool HasFlag(this Enum variable, Enum value) => (Convert.ToUInt32(variable) & Convert.ToUInt32(value)) == Convert.ToUInt32(value);
     }
 }
