@@ -6,11 +6,15 @@ namespace SickDev.CommandSystem
 {
     internal class CommandAttributeLoader 
     {
+        NotificationsHandler notificationsHandler;
         List<Command> commands = new List<Command>();
         Type[] types;
 
-        public CommandAttributeLoader(ReflectionFinder finder) => 
+        public CommandAttributeLoader(ReflectionFinder finder, NotificationsHandler notificationsHandler)
+        {
+            this.notificationsHandler = notificationsHandler;
             types = finder.GetUserClassesAndStructs();
+        }
 
         public Command[] LoadCommands() 
         {
@@ -30,7 +34,7 @@ namespace SickDev.CommandSystem
                 {
                     if(!verifier.isDeclarationSupported) 
                     {
-                        CommandsManager.SendException(new UnsupportedCommandDeclarationException(methods[i]));
+                        notificationsHandler.NotifyException(new UnsupportedCommandDeclarationException(methods[i]));
                         continue;
                     }
                     Command command = verifier.ExtractCommand();

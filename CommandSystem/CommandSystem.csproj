@@ -57,6 +57,7 @@
     <Compile Include="Source\CommandTypes.cs" />
     <Compile Include="Source\Configuration.cs" />
     <Compile Include="Source\Exceptions.cs" />
+    <Compile Include="Source\NotificationsHandler.cs" />
     <Compile Include="Source\ParsedArgument.cs" />
     <Compile Include="Source\ParsedCommand.cs" />
     <Compile Include="Source\ParserAttribute.cs" />

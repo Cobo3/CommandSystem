@@ -1,4 +1,5 @@
-﻿using System;
+﻿/*
+using System;
 using UnityEngine;
 
 namespace SickDev.CommandSystem.Unity {
@@ -782,3 +783,4 @@ namespace SickDev.CommandSystem.Unity {
         }
     }
 }
+*/

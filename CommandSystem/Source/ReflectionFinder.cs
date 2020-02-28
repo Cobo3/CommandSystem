@@ -9,6 +9,7 @@ namespace SickDev.CommandSystem
     {
         Configuration configuration;
         Type[] userTypes;
+        NotificationsHandler notificationsHandler;
 
         static Type[] _allTypes;
 
@@ -24,9 +25,10 @@ namespace SickDev.CommandSystem
 
         public static Type[] enumTypes => allTypes.Where(x => x.IsEnum).ToArray();
 
-        public ReflectionFinder(Configuration configuration) 
+        public ReflectionFinder(Configuration configuration, NotificationsHandler notificationsHandler) 
         {
             this.configuration = configuration;
+            this.notificationsHandler = notificationsHandler;
             userTypes = LoadUserTypes().ToArray();
         }
 
@@ -43,7 +45,7 @@ namespace SickDev.CommandSystem
         {
             List<Type> types = new List<Type>();
             Assembly[] assemblies = GetAssembliesWithCommands();
-            CommandsManager.SendMessage("Loading CommandSystem data from: " +
+            notificationsHandler.NotifyMessage("Loading CommandSystem data from: " +
                 string.Join(", ", assemblies.ToList().ConvertAll(x => 
                 {
                     AssemblyName name = x.GetName();
@@ -85,7 +87,7 @@ namespace SickDev.CommandSystem
                     }
                     catch 
                     {
-                        CommandsManager.SendMessage("Assembly with name '" + assembliesWithCommands[i] + "' could not be found. Please, make sure the assembly is properly loaded");
+                        notificationsHandler.NotifyMessage("Assembly with name '" + assembliesWithCommands[i] + "' could not be found. Please, make sure the assembly is properly loaded");
                     }
                 }
             }

@@ -9,6 +9,7 @@ namespace SickDev.CommandSystem
 
         readonly List<Command> commands;
         readonly ParsedCommand parsedCommand;
+        NotificationsHandler notificationsHandler;
         List<Command> overloads = new List<Command>();
         List<Match> matches = new List<Match>();
         
@@ -16,10 +17,11 @@ namespace SickDev.CommandSystem
         public bool canBeExecuted => matches.Count == 1;
         public bool hasReturnValue => canBeExecuted && matches[0].command.hasReturnValue;
 
-        internal CommandExecuter(List<Command> commands, ParsedCommand parsedCommand, ArgumentsParser parser) 
+        internal CommandExecuter(List<Command> commands, ParsedCommand parsedCommand, ArgumentsParser parser, NotificationsHandler notificationsHandler)
         {
             this.commands = commands;
             this.parsedCommand = parsedCommand;
+            this.notificationsHandler = notificationsHandler;
             FilterOverloads();
             FilterMatches(parser);
         }
@@ -57,7 +59,7 @@ namespace SickDev.CommandSystem
             }
             catch(Exception exception) 
             {
-                CommandsManager.SendException(exception);
+                notificationsHandler.NotifyException(exception);
                 return null;
             }
         }

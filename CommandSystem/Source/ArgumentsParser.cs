@@ -8,15 +8,17 @@ namespace SickDev.CommandSystem
 {
     internal class ArgumentsParser 
     {
-        //Dictionary for linking a given type with its respective Parser method
-        Dictionary<Type, MethodInfo> parsers;
         ReflectionFinder finder;
+        NotificationsHandler notificationsHandler;
+        //Dictionary for linking a given type with its respective Parser method
+        Dictionary<Type, MethodInfo> parsers = new Dictionary<Type, MethodInfo>();
 
         public bool dataLoaded { get; private set; }
 
-        public ArgumentsParser(ReflectionFinder finder, Configuration configuration) 
+        public ArgumentsParser(ReflectionFinder finder, Configuration configuration, NotificationsHandler notificationsHandler) 
         {
             this.finder = finder;
+            this.notificationsHandler = notificationsHandler;
             if(configuration.allowThreading)
                 new Thread(Load).Start();
             else
@@ -26,7 +28,6 @@ namespace SickDev.CommandSystem
         //Finds every Parser method and adds it to the array
         void Load() 
         {
-            parsers = new Dictionary<Type, MethodInfo>();
             Type[] allTypes = finder.GetUserClassesAndStructs();
             for (int i = 0; i < allTypes.Length; i++) 
             { 
@@ -40,12 +41,12 @@ namespace SickDev.CommandSystem
                         if (!parsers.ContainsKey(parser.type))
                             parsers.Add(parser.type, methods[j]);
                         else
-                            CommandsManager.SendException(new DuplicatedParserException(parser));
+                            notificationsHandler.NotifyException(new DuplicatedParserException(parser));
                     }
                 }
             }
             dataLoaded = true;
-            CommandsManager.SendMessage("Loaded " + parsers.Count + " parsers:\n" + string.Join("\n", parsers.ToList().ConvertAll(x => x.Key.Namespace+"."+SignatureBuilder.TypeToString(x.Key)).ToArray()));
+            notificationsHandler.NotifyMessage("Loaded " + parsers.Count + " parsers:\n" + string.Join("\n", parsers.ToList().ConvertAll(x => x.Key.Namespace+"."+SignatureBuilder.TypeToString(x.Key)).ToArray()));
         }
 
         public object Parse(ParsedArgument argument, Type type) 

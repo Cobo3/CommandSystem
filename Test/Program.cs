@@ -6,8 +6,8 @@ namespace Test {
         static CommandsManager manager;
         static Command command;
         static void Main(string[] args) {
-            CommandsManager.onMessage += Console.WriteLine;
-            CommandsManager.onExceptionThrown += exception=>Console.WriteLine(exception.Message);
+            //CommandsManager.onMessage += Console.WriteLine;
+            //CommandsManager.onExceptionThrown += exception=>Console.WriteLine(exception.Message);
 
             Configuration configuration = new Configuration(true, "Test", "CommandSystem-Unity");
             manager = new CommandsManager(configuration);

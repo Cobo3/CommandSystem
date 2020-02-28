@@ -9,6 +9,7 @@ namespace SickDev.CommandSystem
     public class CommandsBuilder 
     {
         Type type;
+        NotificationsHandler notificationsHandler;
         List<Command> commands = new List<Command>();
 
         public PropertyBuilderSettings fieldsSettings { get; set; }
@@ -19,9 +20,10 @@ namespace SickDev.CommandSystem
 
         public Command[] lastBuiltCommands => commands.ToArray();
 
-        public CommandsBuilder(Type type) 
+        public CommandsBuilder(Type type, NotificationsHandler notificationsHandler) 
         {
             this.type = type;
+            this.notificationsHandler = notificationsHandler;
             className = type.Name;
             fieldsSettings = new PropertyBuilderSettings();
             propertiesSettings = new PropertyBuilderSettings();
@@ -64,7 +66,7 @@ namespace SickDev.CommandSystem
                     }
                     catch(Exception e) 
                     {
-                        CommandsManager.SendException(new CommandBuildingException(type, fields[i], e));
+                        notificationsHandler.NotifyException(new CommandBuildingException(type, fields[i], e));
                     }
                 }
                 if(fieldsSettings.accessorCreationBindings.HasFlag(AccessorCreationBindings.Setter)) 
@@ -81,7 +83,7 @@ namespace SickDev.CommandSystem
                         }
                         catch(Exception e) 
                         {
-                            CommandsManager.SendException(new CommandBuildingException(type, fields[i], e));
+                            notificationsHandler.NotifyException(new CommandBuildingException(type, fields[i], e));
                         }
                     }
                 }
@@ -128,7 +130,7 @@ namespace SickDev.CommandSystem
             }
             catch(Exception e) 
             {
-                CommandsManager.SendException(new CommandBuildingException(type, property, e));
+                notificationsHandler.NotifyException(new CommandBuildingException(type, property, e));
             }
         }
 
@@ -149,7 +151,7 @@ namespace SickDev.CommandSystem
                 }
                 catch(Exception e) 
                 {
-                    CommandsManager.SendException(new CommandBuildingException(type, methods[i], e));
+                    notificationsHandler.NotifyException(new CommandBuildingException(type, methods[i], e));
                 }
             }
         }

@@ -7,31 +7,41 @@ namespace SickDev.CommandSystem
 {
     public class CommandsManager 
     {
-        public delegate void OnExceptionThrown(Exception exception);
-        public delegate void OnMessage(string message);
         public delegate void OnCommandModified(Command command);
 
+        NotificationsHandler notificationsHandler;
+        ReflectionFinder finder;
+        ArgumentsParser parser;
+        CommandAttributeLoader loader;
         object block = new object();
         List<Command> commands = new List<Command>();
 
-        readonly Configuration configuration;
-        readonly ReflectionFinder finder;
-        readonly ArgumentsParser parser;
-        readonly CommandAttributeLoader loader;
+        public Configuration configuration { get; private set; }
+
+        public bool isAllDataLoaded => parser.dataLoaded;
 
         public event OnCommandModified onCommandAdded;
         public event OnCommandModified onCommandRemoved;
-        public static event OnExceptionThrown onExceptionThrown;
-        public static event OnMessage onMessage;
 
-        public bool allDataLoaded => parser.dataLoaded;
+        public event NotificationsHandler.OnExceptionThrown onExceptionThrown
+        {
+            add => notificationsHandler.onExceptionThrown += value;
+            remove => notificationsHandler.onExceptionThrown -= value;
+        }
+
+        public event NotificationsHandler.OnMessageSent onMessageSent
+        {
+            add => notificationsHandler.onMessageSent += value;
+            remove => notificationsHandler.onMessageSent -= value;
+        }
 
         public CommandsManager(Configuration configuration) 
         {
             this.configuration = configuration;
-            finder = new ReflectionFinder(configuration);
-            parser = new ArgumentsParser(finder, configuration);
-            loader = new CommandAttributeLoader(finder);
+            notificationsHandler = new NotificationsHandler();
+            finder = new ReflectionFinder(configuration, notificationsHandler);
+            parser = new ArgumentsParser(finder, configuration, notificationsHandler);
+            loader = new CommandAttributeLoader(finder, notificationsHandler);
         }
 
         public void LoadCommands() 
@@ -109,18 +119,6 @@ namespace SickDev.CommandSystem
             return GetCommandExecuter(parsedCommand);
         }
 
-        public CommandExecuter GetCommandExecuter(ParsedCommand parsedCommand) =>  new CommandExecuter(commands, parsedCommand, parser);
-
-        public static void SendException(Exception exception) 
-        {
-            if (onExceptionThrown != null)
-                onExceptionThrown(exception);
-        }
-
-        public static void SendMessage(string message) 
-        {
-            if (onMessage != null)
-                onMessage(message);
-        }
+        public CommandExecuter GetCommandExecuter(ParsedCommand parsedCommand) =>  new CommandExecuter(commands, parsedCommand, parser, notificationsHandler);
     }
 }
