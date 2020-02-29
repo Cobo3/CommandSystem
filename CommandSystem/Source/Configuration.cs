@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SickDev.CommandSystem
 {
@@ -20,6 +21,10 @@ namespace SickDev.CommandSystem
 
         public void RegisterAssembly(string assembly) 
         {
+            if (assembly == null)
+                throw new ArgumentNullException(nameof(assembly));
+            if (assembly.Length == 0)
+                throw new ArgumentException("Empty assembly names are not allowed", nameof(assembly));
             if (!registeredAssembliesList.Contains(assembly))
                 registeredAssembliesList.Add(assembly);
         }

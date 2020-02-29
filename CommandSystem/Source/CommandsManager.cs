@@ -35,6 +35,7 @@ namespace SickDev.CommandSystem
             remove => notificationsHandler.onMessageSent -= value;
         }
 
+        //TODO Dependency injection
         public CommandsManager(Configuration configuration) 
         {
             this.configuration = configuration;

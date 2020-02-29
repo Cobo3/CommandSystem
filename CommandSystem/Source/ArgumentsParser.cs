@@ -28,7 +28,7 @@ namespace SickDev.CommandSystem
         //Finds every Parser method and adds it to the array
         void Load() 
         {
-            Type[] allTypes = finder.GetUserClassesAndStructs();
+            Type[] allTypes = finder.userClassesAndStructs;
             for (int i = 0; i < allTypes.Length; i++) 
             { 
                 MethodInfo[] methods = allTypes[i].GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);

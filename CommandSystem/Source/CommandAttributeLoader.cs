@@ -13,7 +13,7 @@ namespace SickDev.CommandSystem
         public CommandAttributeLoader(ReflectionFinder finder, NotificationsHandler notificationsHandler)
         {
             this.notificationsHandler = notificationsHandler;
-            types = finder.GetUserClassesAndStructs();
+            types = finder.userClassesAndStructs;
         }
 
         public Command[] LoadCommands() 
