@@ -10,43 +10,47 @@ namespace SickDev.CommandSystem
     {
         ReflectionFinder finder;
         NotificationsHandler notificationsHandler;
-        //Dictionary for linking a given type with its respective Parser method
+        //Links a type with its Parser method
         Dictionary<Type, MethodInfo> parsers = new Dictionary<Type, MethodInfo>();
 
-        public bool dataLoaded { get; private set; }
+        public bool isDataLoaded { get; private set; }
 
-        public ArgumentsParser(ReflectionFinder finder, Configuration configuration, NotificationsHandler notificationsHandler) 
+        public ArgumentsParser(ReflectionFinder finder, NotificationsHandler notificationsHandler, bool allowThreading)
         {
             this.finder = finder;
             this.notificationsHandler = notificationsHandler;
-            if(configuration.allowThreading)
-                new Thread(Load).Start();
+            if(allowThreading)
+                new Thread(FindParsers).Start();
             else
-                Load();
+                FindParsers();
         }
 
-        //Finds every Parser method and adds it to the array
-        void Load() 
+        void FindParsers() 
         {
-            Type[] allTypes = finder.userClassesAndStructs;
-            for (int i = 0; i < allTypes.Length; i++) 
-            { 
-                MethodInfo[] methods = allTypes[i].GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
-                for (int j = 0; j < methods.Length; j++) 
-                { 
-                    object[] attributes = methods[j].GetCustomAttributes(typeof(ParserAttribute), false);
-                    if (attributes.Length > 0) 
-                    {
-                        ParserAttribute parser = (ParserAttribute)attributes[0];
-                        if (!parsers.ContainsKey(parser.type))
-                            parsers.Add(parser.type, methods[j]);
-                        else
-                            notificationsHandler.NotifyException(new DuplicatedParserException(parser));
-                    }
-                }
+            Type[] types = finder.userClassesAndStructs;
+            for (int i = 0; i < types.Length; i++)
+                FindParsersInType(types[i]);
+            isDataLoaded = true;
+            notificationsHandler.NotifyMessage($"Loaded {parsers.Count} parsers:\n{string.Join("\n", parsers.ToList().ConvertAll(x => x.Key.Namespace+"."+SignatureBuilder.TypeToString(x.Key)).ToArray())}");
+        }
+
+        void FindParsersInType(Type type)
+        {
+            MethodInfo[] methods = type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+            for (int i = 0; i < methods.Length; i++)
+            {
+                object[] attributes = methods[i].GetCustomAttributes(typeof(ParserAttribute), false);
+                if (attributes.Length > 0)
+                    AddParser((ParserAttribute)attributes[0], methods[i]);
             }
-            dataLoaded = true;
-            notificationsHandler.NotifyMessage("Loaded " + parsers.Count + " parsers:\n" + string.Join("\n", parsers.ToList().ConvertAll(x => x.Key.Namespace+"."+SignatureBuilder.TypeToString(x.Key)).ToArray()));
+        }
+
+        void AddParser(ParserAttribute attribute, MethodInfo method)
+        {
+            if (!parsers.ContainsKey(attribute.type))
+                parsers.Add(attribute.type, method);
+            else
+                notificationsHandler.NotifyException(new DuplicatedParser(attribute));
         }
 
         public object Parse(ParsedArgument argument, Type type) 

@@ -18,7 +18,7 @@ namespace SickDev.CommandSystem
 
         public Configuration configuration { get; private set; }
 
-        public bool isAllDataLoaded => parser.dataLoaded;
+        public bool isAllDataLoaded => parser.isDataLoaded;
 
         public event OnCommandModified onCommandAdded;
         public event OnCommandModified onCommandRemoved;
@@ -41,7 +41,7 @@ namespace SickDev.CommandSystem
             this.configuration = configuration;
             notificationsHandler = new NotificationsHandler();
             finder = new ReflectionFinder(configuration, notificationsHandler);
-            parser = new ArgumentsParser(finder, configuration, notificationsHandler);
+            parser = new ArgumentsParser(finder, notificationsHandler, configuration.allowThreading);
             loader = new CommandAttributeLoader(finder, notificationsHandler);
         }
 

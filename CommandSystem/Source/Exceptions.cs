@@ -56,16 +56,16 @@ namespace SickDev.CommandSystem
         }
 
         public override string Message =>
-            "There was an error creating a command for "+member.MemberType+" "+ member.Name + " of type " + type.Name + ". Skipping command.\n" +
-                    "Error Message: " + InnerException.Message + "\nStackTrace" + InnerException.StackTrace;
+            $"There was an error creating a command for {member.MemberType} {member.Name} of type {type.Name}. Skipping command." +
+                    $"\nError Message: {InnerException.Message}\nStackTrace: {InnerException.StackTrace}";
     }
 
-    public class DuplicatedParserException : CommandSystemException 
+    public class DuplicatedParser : CommandSystemException 
     {
         ParserAttribute parser;
 
-        public DuplicatedParserException(ParserAttribute parser) => this.parser = parser;
-        public override string Message => "More than one Parser was specified for type " + parser.type + ".Please, note that most common types already have a built-in Parser";
+        public DuplicatedParser(ParserAttribute parser) => this.parser = parser;
+        public override string Message => $"More than one Parser was found for type {parser.type}.Please, note that most common types already have a built-in Parser";
     }
 
     public class NoValidParserFoundException : CommandSystemException
