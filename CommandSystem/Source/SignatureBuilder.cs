@@ -2,7 +2,6 @@
 using System.Text;
 using System.Reflection;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
 namespace SickDev.CommandSystem 
 {
@@ -51,7 +50,6 @@ namespace SickDev.CommandSystem
             }
             signature.Append(name);
             List<ParameterInfo> parameters = new List<ParameterInfo>(method.GetParameters());
-            parameters.RemoveAll(x => x.ParameterType == typeof(ExecutionScope));
             if (parameters.Count > 0)
                 AddParameters(signature, parameters.ToArray());
             return signature.ToString();
@@ -62,8 +60,6 @@ namespace SickDev.CommandSystem
             signature = signature.Append('(');
             for (int i = 0; i < parameters.Length; i++) 
             {
-                if(parameters[i].ParameterType == typeof(ExecutionScope))
-                    continue;
                 AddParameter(signature, parameters[i]);
                 if (i != parameters.Length - 1)
                     signature = signature.Append(", ");

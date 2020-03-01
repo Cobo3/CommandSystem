@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
 namespace SickDev.CommandSystem
 {
@@ -26,7 +25,6 @@ namespace SickDev.CommandSystem
         {
             this.command = command;
             List<ParameterInfo> parameters = new List<ParameterInfo>(command.method.GetParameters());
-            parameters.RemoveAll(x => x.ParameterType == typeof(ExecutionScope));
             this.parameters = parameters.ToArray();
         }
 
