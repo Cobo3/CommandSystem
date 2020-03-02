@@ -225,9 +225,11 @@ namespace SickDev.CommandSystem
                     if(member.Name == nameExceptions[i])
                         return true;
 
+                //If we include obsolete members, then those members are never an excepion, regardless of whether they are obsolete or not
                 if(includeObsolete)
-                    return true;
+                    return false;
 
+                //Otherwise, if they are not included, then members marked as obsolete are indeed exceptions
                 object[] attributes = member.GetCustomAttributes(typeof(ObsoleteAttribute), true);
                 return attributes.Length > 0;
             }
