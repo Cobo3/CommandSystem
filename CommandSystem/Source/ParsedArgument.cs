@@ -1,130 +1,121 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SickDev.CommandSystem 
+namespace SickDev.CommandSystem
 {
-    public class ParsedArgument 
-    {
-        static CastInfo[] _castInfo;
-        static CastInfo[] castInfo 
-        {
-            get 
-            {
-                if(_castInfo == null)
-                    _castInfo = CreateCastInfo();
-                return _castInfo;
-            }
-        }
+	//TODO ParedParameter?
+	//TODO ArgumentParser?
+	public class ParsedArgument
+	{
+		static CastInfo[] castInfo;
+		static Dictionary<string, CachedCast> cachedCasts = new Dictionary<string, CachedCast>();
 
-        static Dictionary<string, CachedCast> cachedCasts = new Dictionary<string, CachedCast>();
+		public string raw { get; private set; }
+		public string argument { get; private set; }
+		public Type type { get; private set; }
 
-        public string raw { get; private set; }
-        public string argument { get; private set; }
-        public Type type { get; private set; }
+		public bool isTypeSpecified => type != null;
 
-        public bool isTypeSpecified => type != null;
+		static ParsedArgument()
+		{
+			Type[] allTypes = ReflectionFinder.allTypes;
+			List<CastInfo> castInfoList = new List<CastInfo>();
+			for (int i = 0; i < allTypes.Length; i++)
+			{
+				Type type = allTypes[i];
+				string name = type.Name;
+				string fullName = type.FullName;
+				if (SignatureBuilder.aliases.ContainsKey(type))
+					name = fullName = SignatureBuilder.aliases[type];
 
-        public ParsedArgument(string raw) 
-        {
-            this.raw = raw;
+				castInfoList.Add(new CastInfo(type, name, fullName));
+				//Only make array CastInfo when the parameter is not byref
+				if (type != typeof(TypedReference) && !type.IsByRef)
+					castInfoList.Add(new CastInfo(type.MakeArrayType(), name + "[]", fullName + "[]"));
+			}
+			castInfo = castInfoList.ToArray();
+		}
 
-            if(raw.StartsWith("("))
-                ParseComplex();
-            else
-                ParseSimple();
-        }
+		public ParsedArgument(string raw)
+		{
+			this.raw = raw;
 
-        void ParseComplex() 
-        {
-            int index = raw.IndexOf(")");
-            argument = raw.Substring(index + 1);
-            string cast = raw.Substring(1, index-1);
-            if(!cachedCasts.ContainsKey(cast))
-                CreateCachedCast(cast);
-            type = GetCastType(cast);
-        }
+			if (!raw.StartsWith("("))
+				ParseSimple();
+			else
+				ParseComplex();
+		}
 
-        Type GetCastType(string cast) 
-        {
-            CachedCast cachedCast = cachedCasts[cast];
+		void ParseSimple()
+		{
+			type = null;
+			argument = raw;
+		}
 
-            if(cachedCast.nameMatches.Count == 0)
-                throw new ExplicitCastNotFoundException(cast);
-            if(cachedCast.nameMatches.Count > 1)
-                throw new AmbiguousExplicitCastException(cast, cachedCast.nameMatches.ConvertAll(x => x.type).ToArray());
-            return cachedCast.nameMatches[0].type;
-        }
+		void ParseComplex()
+		{
+			//TODO check if this influences a string parameter whose value contains parenthesis
+			int index = raw.IndexOf(")");
+			argument = raw.Substring(index + 1);
+			string castType = raw.Substring(1, index - 1);
 
-        void CreateCachedCast(string cast)
-        {
-            CachedCast cachedCast = new CachedCast(cast);
-            for(int i = 0; i < castInfo.Length; i++)
-                if(castInfo[i].name.Equals(cast, StringComparison.OrdinalIgnoreCase))
-                    cachedCast.nameMatches.Add(castInfo[i]);
+			//TODO try get value
+			if (!cachedCasts.ContainsKey(castType))
+				CreateCachedCast(castType);
+			type = GetCastType(castType);
+		}
 
-            if(cachedCast.nameMatches.Count == 0) 
-            {
-                for(int i = 0; i < castInfo.Length; i++) 
-                {
-                    if(castInfo[i].fullName.Equals(cast, StringComparison.OrdinalIgnoreCase)) 
-                    {
-                        cachedCast.nameMatches.Add(castInfo[i]);
-                        break;
-                    }
-                }
-            }
-            cachedCasts.Add(cast, cachedCast);
-        }
+		static void CreateCachedCast(string castType)
+		{
+			CachedCast cachedCast = new CachedCast(castType);
+			for (int i = 0; i < castInfo.Length; i++)
+				if (castInfo[i].name.Equals(castType, StringComparison.OrdinalIgnoreCase))
+					cachedCast.nameMatches.Add(castInfo[i]);
 
-        void ParseSimple() 
-        {
-            type = null;
-            argument = raw;
-        }
+			//If no name matches, resort to fullname matches
+			//TODO both fors are the same...
+			if (cachedCast.nameMatches.Count == 0)
+				for (int i = 0; i < castInfo.Length; i++)
+					if (castInfo[i].fullName.Equals(castType, StringComparison.OrdinalIgnoreCase))
+						cachedCast.nameMatches.Add(castInfo[i]);
+			cachedCasts.Add(castType, cachedCast);
+		}
 
-        static CastInfo[] CreateCastInfo() 
-        {
-            Type[] allTypes = ReflectionFinder.allTypes;
-            List<CastInfo> typesInfo = new List<CastInfo>();
-            for(int i = 0; i < allTypes.Length; i++) 
-            {
-                Type type = allTypes[i];
-                string name = type.Name;
-                string fullName = type.FullName;
-                if(SignatureBuilder.aliases.ContainsKey(type))
-                    name = fullName = SignatureBuilder.aliases[type];
+		static Type GetCastType(string cast)
+		{
+			CachedCast cachedCast = cachedCasts[cast];
 
-                typesInfo.Add(new CastInfo(type, name, fullName));
-                if (type != typeof(TypedReference) && !type.IsByRef)
-                    typesInfo.Add(new CastInfo(type.MakeArrayType(), name + "[]", fullName + "[]"));
-            }
-            return typesInfo.ToArray();
-        }
+			if (cachedCast.nameMatches.Count == 0)
+				throw new ExplicitCastNotFound(cast);
+			if (cachedCast.nameMatches.Count > 1)
+				throw new AmbiguousExplicitCast(cast, cachedCast.nameMatches.ConvertAll(x => x.type).ToArray());
+			return cachedCast.nameMatches[0].type;
+		}
 
-        struct CastInfo 
-        {
-            public readonly Type type;
-            public readonly string name;
-            public readonly string fullName;
+		struct CastInfo
+		{
+			public readonly Type type;
+			public readonly string name;
+			public readonly string fullName;
 
-            public CastInfo(Type type, string name, string fullName)
-            {
-                this.type = type;
-                this.name = name;
-                this.fullName = fullName;
-            }
-        }
+			public CastInfo(Type type, string name, string fullName)
+			{
+				this.type = type;
+				this.name = name;
+				this.fullName = fullName;
+			}
+		}
 
-        struct CachedCast
-        {
-            public readonly string cast;
-            public List<CastInfo> nameMatches;
+		struct CachedCast
+		{
+			public readonly string castType;
+			public List<CastInfo> nameMatches;
 
-            public CachedCast(string cast) 
-            {
-                this.cast = cast;
-                nameMatches = new List<CastInfo>();
-            }
-        }
-    }
+			public CachedCast(string castType)
+			{
+				this.castType = castType;
+				nameMatches = new List<CastInfo>();
+			}
+		}
+	}
 }
