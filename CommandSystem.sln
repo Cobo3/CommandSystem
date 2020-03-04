@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandSystem", "CommandSys
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandSystem-Unity", "CommandSystem-Unity\CommandSystem-Unity.csproj", "{A584D558-52F2-466E-A82F-AE294CD7B8F9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandSystem.Tests", "CommandSystem.Tests\CommandSystem.Tests.csproj", "{D4236FFE-64A6-4846-9561-064F4A378BDB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandSystem.Tests", "CommandSystem.Tests\CommandSystem.Tests.csproj", "{EE4AC67E-431F-40CE-8C43-B8838141EBDB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{A584D558-52F2-466E-A82F-AE294CD7B8F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A584D558-52F2-466E-A82F-AE294CD7B8F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A584D558-52F2-466E-A82F-AE294CD7B8F9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D4236FFE-64A6-4846-9561-064F4A378BDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D4236FFE-64A6-4846-9561-064F4A378BDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D4236FFE-64A6-4846-9561-064F4A378BDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D4236FFE-64A6-4846-9561-064F4A378BDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE4AC67E-431F-40CE-8C43-B8838141EBDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE4AC67E-431F-40CE-8C43-B8838141EBDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE4AC67E-431F-40CE-8C43-B8838141EBDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE4AC67E-431F-40CE-8C43-B8838141EBDB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
