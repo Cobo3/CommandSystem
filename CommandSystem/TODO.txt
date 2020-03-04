@@ -3,7 +3,6 @@
 ===========FEATURES==========
 - Add support for text colors such as Color.green
 - Support for Unity 2017.1
-- Remove log static methods
 - Load/Unload commands at runtime from CommandsBuilder
 - Add support for instance elements
 - Make it survive recompilation
