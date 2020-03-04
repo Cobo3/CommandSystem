@@ -1,194 +1,250 @@
 ﻿using System;
 using System.Text;
 using System.Reflection;
+using System.Runtime.Serialization;
 
-namespace SickDev.CommandSystem 
+namespace SickDev.CommandSystem
 {
-    public class CommandSystemException : Exception 
+    [Serializable]
+    public class CommandSystemException : Exception
     {
-        public CommandSystemException() { }
-        public CommandSystemException(Exception innerException):base(string.Empty, innerException) { }
+        public CommandSystemException(string message) : base(message) {}
+        public CommandSystemException(string message, Exception innerException) : base(message, innerException) {}
+
+        protected CommandSystemException(SerializationInfo serializationInfo, StreamingContext streamingContext) : base(serializationInfo, streamingContext) { }
     }
 
-    public class InvalidCommandTypeConstructorException : CommandSystemException 
+    [Serializable]
+    public class InvalidCommandTypeConstructor : CommandSystemException
     {
-        Type type;
+        public Type type { get; }
 
-        public InvalidCommandTypeConstructorException(Type type) => this.type = type;
+        public InvalidCommandTypeConstructor(Type type) 
+            : base(GetMessage(type)) 
+            => this.type = type;
 
-        public override string Message => type.Name + " does not have a valid constructor. Please, review the docs on how to create new Command types";
+        static string GetMessage(Type type) => type.Name + " does not have a valid constructor. Please, review the docs on how to create new Command types";
+
+        protected InvalidCommandTypeConstructor(SerializationInfo serializationInfo, StreamingContext streamingContext) : base(serializationInfo, streamingContext) { }
     }
 
-    public class UnsupportedCommandDeclarationException : CommandSystemException 
+    [Serializable]
+    public class UnsupportedCommandDeclaration : CommandSystemException
     {
-        MethodInfo method;
+        public MethodInfo method { get; }
 
-        string methodPath => method.DeclaringType + "." + method.Name;
-        string header => "The command "+methodPath;
-        string tail => "Please, review the docs on how to create new Commands";
+        public UnsupportedCommandDeclaration(MethodInfo method) 
+            : base(GetMessage(method)) 
+            => this.method = method;
 
-        public UnsupportedCommandDeclarationException(MethodInfo method) => this.method = method;
-
-        public override string Message 
+        static string GetMessage(MethodInfo method)
         {
-            get 
-            {
-                if (!method.IsStatic)
-                    return header+" is not static. Only static commands are supported. " + tail;
-                else if (method.IsGenericMethod || method.IsGenericMethodDefinition)
-                    return header + " is generic, which is not yet supported. " + tail;
-                else
-                    return header + " declaration is unsupported. " +tail;
-            }
+            string message = $"The command {method.DeclaringType}.{method.Name}";
+            if (!method.IsStatic)
+                message += " is not static. Only static commands are supported. ";
+            else if (method.IsGenericMethod || method.IsGenericMethodDefinition)
+                message += " is generic, which is not yet supported. ";
+            //TODO what "else" could this possibly mean?
+            else
+                message += " declaration is unsupported. ";
+            message += "Please, review the docs on how to create new Commands";
+            return message;
         }
+
+        protected UnsupportedCommandDeclaration(SerializationInfo serializationInfo, StreamingContext streamingContext) : base(serializationInfo, streamingContext) { }
     }
 
-    public class CommandBuildingException : CommandSystemException 
+    [Serializable]
+    public class CommandBuildingException : CommandSystemException
     {
-        Type type;
-        MemberInfo member;
+        public Type type { get; }
+        public MemberInfo member { get; }
 
-        public CommandBuildingException(Type type, MemberInfo member, Exception innerException):
-            base(innerException) 
+        public CommandBuildingException(Type type, MemberInfo member, Exception innerException) :
+            base(GetMessage(type, member, innerException), innerException)
         {
             this.type = type;
             this.member = member;
         }
 
-        public override string Message =>
-            "There was an error creating a command for "+member.MemberType+" "+ member.Name + " of type " + type.Name + ". Skipping command.\n" +
-                    "Error Message: " + InnerException.Message + "\nStackTrace" + InnerException.StackTrace;
+        static string GetMessage(Type type, MemberInfo member, Exception innerException) 
+            => $"There was an error creating a command for {member.MemberType} {member.Name} of type {type.Name}. Skipping command." +
+                    $"\nError Message: {innerException.Message}\nStackTrace: {innerException.StackTrace}";
+
+        protected CommandBuildingException(SerializationInfo serializationInfo, StreamingContext streamingContext) : base(serializationInfo, streamingContext) { }
     }
 
-    public class DuplicatedParserException : CommandSystemException 
+    [Serializable]
+    public class DuplicatedParser : CommandSystemException
     {
-        ParserAttribute parser;
+        public ParserAttribute attribute { get; }
 
-        public DuplicatedParserException(ParserAttribute parser) => this.parser = parser;
-        public override string Message => "More than one Parser was specified for type " + parser.type + ".Please, note that most common types already have a built-in Parser";
+        public DuplicatedParser(ParserAttribute attribute)
+            : base(GetMessage(attribute)) 
+            => this.attribute = attribute;
+
+        static string GetMessage(ParserAttribute attribute) 
+            => $"More than one Parser was found for type {attribute.type}.Please, note that most common types already have a built-in Parser";
+
+        protected DuplicatedParser(SerializationInfo serializationInfo, StreamingContext streamingContext) : base(serializationInfo, streamingContext) { }
     }
 
-    public class NoValidParserFoundException : CommandSystemException
+    [Serializable]
+    public class NoValidParserFound : CommandSystemException
     {
-        Type type;
+        public Type type { get; }
 
-        public NoValidParserFoundException(Type type) => this.type = type;
-        public override string Message => "No valid Parser method found for type " + type.Name+". Please, review the docs on how to create new Parser methods";
+        public NoValidParserFound(Type type) 
+            : base(GetMessage(type))
+            => this.type = type;
+        
+        static string GetMessage(Type type) => $"No valid Parser method found for type {type.Name}. Please, review the docs on how to create new Parser methods";
+
+        protected NoValidParserFound(SerializationInfo serializationInfo, StreamingContext streamingContext) : base(serializationInfo, streamingContext) { }
     }
 
-    public class InvalidArgumentFormatException<T> : CommandSystemException 
+    [Serializable]
+    public class InvalidArgumentFormat : CommandSystemException
     {
-        string argument;
+        public string argument { get; }
+        public Type type { get; }
 
-        public InvalidArgumentFormatException(string argument) => this.argument = argument;
-        public override string Message => "Argument \"" + argument + "\" cannot be parsed into type " + typeof(T).Name + " because it is not in the correct format";
+        public InvalidArgumentFormat(string argument, Type type)
+            : base(GetMessage(argument, type))
+        {
+            this.argument = argument;
+            this.type = type;
+        }
+        
+        static string GetMessage(string argument, Type type) => $"Argument \"{argument}\" cannot be parsed into type {type.Name} because it is not in the correct format";
+
+        protected InvalidArgumentFormat(SerializationInfo serializationInfo, StreamingContext streamingContext) : base(serializationInfo, streamingContext) { }
     }
 
-    public class CommandNotFoundException : CommandSystemException 
+    [Serializable]
+    public class CommandNotFound : CommandSystemException
     {
-        ParsedCommand command;
+        public ParsedCommand command { get; }
 
-        public CommandNotFoundException(ParsedCommand command) => this.command = command;
-        public override string Message => "No command found with name '" + command.command + "'";
+        public CommandNotFound(ParsedCommand command)
+            : base(GetMessage(command))
+            => this.command = command;
+        
+        static string GetMessage (ParsedCommand command) => $"No command found with name '{command.command}'";
+
+        protected CommandNotFound(SerializationInfo serializationInfo, StreamingContext streamingContext) : base(serializationInfo, streamingContext) { }
     }
 
-    public class MatchNotFoundException : CommandSystemException 
+    [Serializable]
+    public class MatchNotFound : CommandSystemException
     {
-        ParsedCommand command;
-        Command[] overloads;
+        public ParsedCommand command { get; }
+        public Command[] overloads { get; }
 
-        public MatchNotFoundException(ParsedCommand command, Command[] overloads) 
+        public MatchNotFound(ParsedCommand command, Command[] overloads)
+            : base (GetMessage(command, overloads))
         {
             this.command = command;
             this.overloads = overloads;
         }
 
-        public override string Message 
+        static string GetMessage(ParsedCommand command, Command[] overloads)
         {
-            get 
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < overloads.Length; i++)
             {
-                StringBuilder builder = new StringBuilder();
-                for(int i = 0; i < overloads.Length; i++) 
-                {
-                    builder.AppendLine();
-                    builder.Append(overloads[i].signature.raw);
-                }
-                return string.Format("No match found between command '{0}' and any of its overloads:{1}", command.raw, builder.ToString());
+                builder.AppendLine();
+                builder.Append(overloads[i].signature.raw);
             }
+            return $"No match found between command '{command.raw}' and any of its overloads:{builder.ToString()}";
         }
+
+        protected MatchNotFound(SerializationInfo serializationInfo, StreamingContext streamingContext) : base(serializationInfo, streamingContext) { }
     }
 
-    public class AmbiguousCommandCallException : CommandSystemException
+    [Serializable]
+    public class AmbiguousCommandCall : CommandSystemException
     {
-        ParsedCommand command;
-        Command[] matches;
+        public ParsedCommand command { get; }
+        public Command[] matches { get; }
 
-        public AmbiguousCommandCallException(ParsedCommand command, Command[] matches) 
+        public AmbiguousCommandCall(ParsedCommand command, Command[] matches)
+            : base (GetMessage(command, matches))
         {
             this.command = command;
             this.matches = matches;
         }
 
-        public override string Message 
-        {
-            get 
+        static string GetMessage(ParsedCommand command, Command[] matches)
+        { 
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < matches.Length; i++)
             {
-                StringBuilder builder = new StringBuilder();
-                for(int i = 0; i < matches.Length; i++) 
-                {
-                    builder.AppendLine();
-                    builder.Append(matches[i].signature.raw);
-                }
-                return string.Format("The command call '{0}' is ambiguous between the following commands:{1}", command.raw, builder.ToString());
+                builder.AppendLine();
+                builder.Append(matches[i].signature.raw);
             }
+            return $"The command call '{command.raw}' is ambiguous between the following commands:{builder.ToString()}";
         }
+
+        protected AmbiguousCommandCall(SerializationInfo serializationInfo, StreamingContext streamingContext) : base(serializationInfo, streamingContext) { }
     }
 
-    public class ExplicitCastNotFoundException : CommandSystemException 
+    [Serializable]
+    public class ExplicitCastNotFound : CommandSystemException
     {
-        string cast;
+        public string cast { get; }
 
-        public ExplicitCastNotFoundException(string cast) => this.cast = cast;
-        public override string Message => string.Format("There is no suitable Type for the explicit cast '{0}'", cast);
+        public ExplicitCastNotFound(string cast) 
+            : base(GetMessage(cast))
+            => this.cast = cast;
+
+        static string GetMessage(string cast) => $"There is no suitable Type for the explicit cast '{cast}'";
+
+        protected ExplicitCastNotFound(SerializationInfo serializationInfo, StreamingContext streamingContext) : base(serializationInfo, streamingContext) { }
     }
 
-    public class AmbiguousExplicitCastException : CommandSystemException 
+    [Serializable]
+    public class AmbiguousExplicitCast : CommandSystemException
     {
-        string cast;
-        Type[] conflicts;
+        public string cast { get; }
+        public Type[] conflicts { get; }
 
-        public AmbiguousExplicitCastException(string cast, Type[] conflicts) 
+        public AmbiguousExplicitCast(string cast, Type[] conflicts)
+            : base (GetMessage(cast, conflicts))
         {
             this.cast = cast;
             this.conflicts = conflicts;
         }
 
-        public override string Message 
+        static string GetMessage(string cast, Type[] conflicts)
         {
-            get 
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < conflicts.Length; i++)
             {
-                StringBuilder builder = new StringBuilder();
-                for(int i = 0; i < conflicts.Length; i++) 
-                {
-                    builder.AppendLine();
-                    builder.Append(conflicts[i].FullName);
-                }
-                return string.Format("The explicit cast '{0}' is ambiguous between the following types:{1}\nPlease, refer to the Full Name of the type when casting again.", cast, builder.ToString());
+                builder.AppendLine();
+                builder.Append(conflicts[i].FullName);
             }
+            return $"The explicit cast '{cast}' is ambiguous between the following types:{builder.ToString()}\nPlease, refer to the Full Name of the type when casting again.";
         }
+
+        protected AmbiguousExplicitCast(SerializationInfo serializationInfo, StreamingContext streamingContext) : base(serializationInfo, streamingContext) { }
     }
 
-    public class ExplicitCastMismatchException : CommandSystemException 
+    [Serializable]
+    public class ExplicitCastMismatch : CommandSystemException
     {
-        Type castType;
-        Type argumentType;
+        public Type castType { get; }
+        public Type argumentType { get; }
 
-        public ExplicitCastMismatchException(Type castType, Type argumentType) 
+        public ExplicitCastMismatch(Type castType, Type argumentType)
+            : base(GetMessage(castType, argumentType))
         {
             this.castType = castType;
             this.argumentType = argumentType;
         }
 
-        public override string Message => string.Format("The argument needs a {0}, whereas the cast was made to {1}", argumentType.Name, castType.Name);
+        static string GetMessage(Type castType, Type argumentType) => $"The argument needs a {argumentType.Name}, whereas the cast was made to {castType.Name}";
+
+        protected ExplicitCastMismatch(SerializationInfo serializationInfo, StreamingContext streamingContext) : base(serializationInfo, streamingContext) { }
     }
 }

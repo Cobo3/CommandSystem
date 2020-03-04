@@ -3,93 +3,84 @@ using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
 
-namespace SickDev.CommandSystem 
+namespace SickDev.CommandSystem
 {
-    internal class ReflectionFinder 
-    {
-        Configuration configuration;
-        Type[] userTypes;
+	//TODO reflection provider quizás?
+	internal class ReflectionFinder
+	{
+		//TODO make these instance members
+		public static Type[] allTypes { get; private set; }
+		public static Type[] enumTypes { get; private set; }
 
-        static Type[] _allTypes;
+		Configuration configuration;
+		NotificationsHandler notificationsHandler;
+		Type[] userTypes;
 
-        public static Type[] allTypes
-        {
-            get 
-            {
-                if(_allTypes == null)
-                    _allTypes = LoadAllTypes().ToArray();
-                return _allTypes;
-            }
-        }
+		public Type[] userClassesAndStructs { get; private set; }
 
-        public static Type[] enumTypes => allTypes.Where(x => x.IsEnum).ToArray();
+		static ReflectionFinder()
+		{
+			allTypes = GetAllTypes();
+			enumTypes = allTypes.Where(x => x.IsEnum).ToArray();
+		}
 
-        public ReflectionFinder(Configuration configuration) 
-        {
-            this.configuration = configuration;
-            userTypes = LoadUserTypes().ToArray();
-        }
+		static Type[] GetAllTypes()
+		{
+			List<Type> types = new List<Type>();
+			Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+			for (int i = 0; i < assemblies.Length; i++)
+				types.AddRange(assemblies[i].GetTypes());
+			return types.ToArray();
+		}
 
-        static List<Type> LoadAllTypes() 
-        {
-            List<Type> types = new List<Type>();
-            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();            
-            for(int i = 0; i < assemblies.Length; i++)
-                types.AddRange(assemblies[i].GetTypes());
-            return types;
-        }
+		//TODO pass assembly names instead of whole config
+		public ReflectionFinder(Configuration configuration, NotificationsHandler notificationsHandler)
+		{
+			this.configuration = configuration;
+			this.notificationsHandler = notificationsHandler;
+			userTypes = GetUserTypes().ToArray();
+			userClassesAndStructs = userTypes.Where(x => x.IsClass || x.IsValueType && !x.IsEnum).ToArray();
+		}
 
-        List<Type> LoadUserTypes() 
-        {
-            List<Type> types = new List<Type>();
-            Assembly[] assemblies = GetAssembliesWithCommands();
-            CommandsManager.SendMessage("Loading CommandSystem data from: " +
-                string.Join(", ", assemblies.ToList().ConvertAll(x => 
-                {
-                    AssemblyName name = x.GetName();
-                    string path = name.CodeBase;
-                    string extension = path.Substring(path.LastIndexOf('.'));
-                    return name.Name + extension;
-                }).ToArray()) + ".");
-            for (int i = 0; i < assemblies.Length; i++)
-                types.AddRange(assemblies[i].GetTypes());
-            return types;
-        }
-        
-        public Type[] GetUserClassesAndStructs() => userTypes.Where(x => x.IsClass || x.IsValueType && !x.IsEnum).ToArray();
+		//User types are those types defined in the registered assemblies
+		List<Type> GetUserTypes()
+		{
+			List<Assembly> assemblies = GetRegisteredAssemblies();
+			notificationsHandler.NotifyMessage("Loading CommandSystem data from: " + string.Join(", ", assemblies.ConvertAll(GetAssemblyFile).ToArray()) + ".");
 
-        Assembly[] GetAssembliesWithCommands() 
-        {
-            List<Assembly> assemblies = new List<Assembly>();
-            Assembly[] loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
-            string[] assembliesWithCommands = configuration.registeredAssemblies;
+			List<Type> types = new List<Type>();
+			for (int i = 0; i < assemblies.Count; i++)
+				types.AddRange(assemblies[i].GetTypes());
+			return types;
+		}
 
-            for(int i = 0; i < assembliesWithCommands.Length; i++) 
-            {
-                bool loaded = false;
-                for(int j = 0; j < loadedAssemblies.Length; j++) 
-                {
-                    if(loadedAssemblies[j].GetName().Name == assembliesWithCommands[i]) 
-                    {
-                        loaded = true;
-                        assemblies.Add(loadedAssemblies[j]);
-                        break;
-                    }
-                }
-                if(!loaded) 
-                {
-                    try 
-                    {
-                        Assembly assembly = Assembly.Load(new AssemblyName(assembliesWithCommands[i]));
-                        assemblies.Add(assembly);
-                    }
-                    catch 
-                    {
-                        CommandsManager.SendMessage("Assembly with name '" + assembliesWithCommands[i] + "' could not be found. Please, make sure the assembly is properly loaded");
-                    }
-                }
-            }
-            return assemblies.ToArray();
-        }
-    }
+		List<Assembly> GetRegisteredAssemblies()
+		{
+			string[] registeredAssemblyNames = configuration.registeredAssemblies;
+			List<Assembly> loadedAssemblies = new List<Assembly>(AppDomain.CurrentDomain.GetAssemblies());
+			List<Assembly> assemblies = new List<Assembly>();
+
+			for (int i = 0; i < registeredAssemblyNames.Length; i++)
+			{
+				Assembly loadedAssembly = FindAssemblyWithName(loadedAssemblies, registeredAssemblyNames[i]);
+				if (loadedAssembly != null)
+					assemblies.Add(loadedAssembly);
+				else
+					//Could load through Assembly.Load, but I don't think that's something the CommandSystem should be responsible for
+					notificationsHandler.NotifyMessage($"Assembly with name '{registeredAssemblyNames[i]}' could not be found. Please, make sure the assembly is properly loaded");
+			}
+			return assemblies;
+		}
+
+		Assembly FindAssemblyWithName(List<Assembly> loadedAssemblies, string name) => loadedAssemblies.Find(x => x.GetName().Name == name);
+
+		//TODO what if the assembly is built at runtime and does not belong to any file?
+		string GetAssemblyFile(Assembly assembly)
+		{
+			AssemblyName name = assembly.GetName();
+			string path = name.CodeBase;
+			string extension = path.Substring(path.LastIndexOf('.'));
+			return name.Name + extension;
+		}
+	}
 }
